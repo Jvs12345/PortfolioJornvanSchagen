@@ -3045,12 +3045,13 @@ h4 {
           </div>
           <div class="prototype-embed__frame" data-warehouse-frame>
             <iframe class="prototype-embed__viewer"
-              src="./Operations%20management/Final%20storage%20map/portfolio_visual.html"
+              src="about:blank"
+              data-src="./Operations%20management/Final%20storage%20map/portfolio_visual.html"
               title="Embedded warehouse digital twin" loading="lazy"></iframe>
             <div class="prototype-embed__overlay" data-warehouse-overlay>
               <div class="prototype-embed__overlay-card">
                 <strong>Warehouse visual ready</strong>
-                <p>Activate interaction when you want to inspect the live model.</p>
+                <p>Activate interaction to load the live model only when you need it.</p>
               </div>
             </div>
           </div>
@@ -3727,6 +3728,7 @@ const navLinks = document.querySelectorAll(".site-nav a");
 const caseJumpLinks = document.querySelectorAll(".case-jump__link");
 const warehouseToggle = document.querySelector("[data-warehouse-toggle]");
 const warehouseFrame = document.querySelector("[data-warehouse-frame]");
+const warehouseViewer = warehouseFrame?.querySelector(".prototype-embed__viewer") ?? null;
 const copyPhoneButton = document.querySelector("[data-copy-phone]");
 const copyEmailButton = document.querySelector("[data-copy-email]");
 
@@ -3793,10 +3795,25 @@ caseStudies.forEach((caseStudy) => {
 
 if (warehouseToggle && warehouseFrame) {
   const setWarehouseMode = (interactive) => {
+    if (warehouseViewer) {
+      const isLoaded = warehouseViewer.dataset.loaded === "true";
+      if (interactive && !isLoaded) {
+        const source = warehouseViewer.dataset.src;
+        if (source) {
+          warehouseViewer.src = source;
+          warehouseViewer.dataset.loaded = "true";
+        }
+      }
+      if (!interactive && isLoaded) {
+        warehouseViewer.src = "about:blank";
+        warehouseViewer.dataset.loaded = "false";
+      }
+    }
+
     warehouseFrame.classList.toggle("is-interactive", interactive);
     warehouseToggle.classList.toggle("is-active", interactive);
     warehouseToggle.setAttribute("aria-pressed", String(interactive));
-    warehouseToggle.textContent = interactive ? "Return to page scroll" : "Activate live warehouse";
+    warehouseToggle.textContent = interactive ? "Deactivate live warehouse" : "Activate live warehouse";
   };
 
   setWarehouseMode(false);
