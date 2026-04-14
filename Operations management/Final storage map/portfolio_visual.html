@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Warehouse Visual</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #d9ddd9;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    #scene {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #scene.is-dragging {
+      cursor: grabbing;
+    }
+
+    .ui-cache {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      pointer-events: none;
+      opacity: 0;
+    }
+  </style>
+  <script>
+    Object.defineProperty(window, "devicePixelRatio", {
+      configurable: true,
+      get() {
+        return 1;
+      }
+    });
+
+    window.requestAnimationFrame = function (callback) {
+      return window.setTimeout(function () {
+        callback(performance.now());
+      }, 50);
+    };
+
+    window.cancelAnimationFrame = function (id) {
+      window.clearTimeout(id);
+    };
+  </script>
+</head>
+<body>
+  <canvas id="scene" aria-label="Warehouse digital twin visual"></canvas>
+
+  <div class="ui-cache" aria-hidden="true">
+    <div id="intro-overlay"></div>
+    <button id="skip-intro-button" type="button"></button>
+    <button id="toggle-route-button" type="button"></button>
+    <button id="toggle-congestion-button" type="button"></button>
+    <button id="switch-scenario-button" type="button"></button>
+    <button id="switch-slotting-button" type="button"></button>
+    <button id="toggle-camera-button" type="button"></button>
+    <button id="reset-view-button" type="button"></button>
+    <select id="month-select"></select>
+    <button id="export-performance-button" type="button"></button>
+    <input id="lookup-input" type="text">
+    <button id="lookup-button" type="button"></button>
+    <span id="active-scenario-chip"></span>
+    <span id="status-copy"></span>
+    <span id="data-footnote"></span>
+    <div id="stop-list"></div>
+    <span id="distance-value"></span>
+    <span id="time-value"></span>
+    <span id="stops-value"></span>
+    <span id="route-length-value"></span>
+    <span id="bottleneck-value"></span>
+    <span id="scenario-value"></span>
+    <span id="fastest-round-value"></span>
+    <datalist id="sku-options"></datalist>
+  </div>
+
+  <script src="storage data.js?v=2"></script>
+  <script src="warehouse-scene.js?v=3"></script>
+  <script src="pathing.js?v=3"></script>
+  <script src="scenario-data.js?v=3"></script>
+  <script src="kpis.js?v=3"></script>
+  <script src="performance-export.js?v=1"></script>
+  <script src="ui.js?v=3"></script>
+  <script src="app.js?v=3"></script>
+</body>
+</html>

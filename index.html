@@ -502,6 +502,21 @@ h4 {
   margin-top: 6px;
 }
 
+.contact-cta__fallback {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.contact-cta__fallback button {
+  border: 1px solid var(--line);
+  background: var(--paper-strong);
+  border-radius: 999px;
+  padding: 6px 10px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
 .contact-cta__button {
   display: inline-flex;
   align-items: center;
@@ -3028,34 +3043,9 @@ h4 {
             <span class="prototype-embed__hint">When inactive, the portfolio keeps normal page scrolling.</span>
           </div>
           <div class="prototype-embed__frame" data-warehouse-frame>
-            <div class="prototype-embed__viewer prototype-embed__viewer--mock" role="img"
-              aria-label="Warehouse digital twin snapshot">
-              <div class="warehouse-mini">
-                <div class="warehouse-mini__aisles">
-                  <span>A01</span>
-                  <span>A02</span>
-                  <span>A03</span>
-                  <span>A04</span>
-                  <span>B01</span>
-                  <span class="is-hot">B02</span>
-                  <span>B03</span>
-                  <span>B04</span>
-                  <span>C01</span>
-                  <span>C02</span>
-                  <span>C03</span>
-                  <span>C04</span>
-                </div>
-                <div class="warehouse-mini__route">
-                  <div class="warehouse-mini__line"></div>
-                  <div class="warehouse-mini__stops">
-                    <span>Dock</span>
-                    <span>Fast-pick</span>
-                    <span>Outbound</span>
-                  </div>
-                </div>
-                <div class="warehouse-mini__hint">Interactive snapshot: route and ABC slotting focus.</div>
-              </div>
-            </div>
+            <iframe class="prototype-embed__viewer"
+              src="./Operations%20management/Final%20storage%20map/portfolio_visual.html"
+              title="Embedded warehouse digital twin" loading="lazy"></iframe>
             <div class="prototype-embed__overlay" data-warehouse-overlay>
               <div class="prototype-embed__overlay-card">
                 <strong>Warehouse visual ready</strong>
@@ -3264,21 +3254,9 @@ h4 {
 
             <div class="visual-panel" data-panel="solution">
               <div class="chatbot-embed chatbot-embed--compact">
-                <div class="chatbot-inline chatbot-inline--compact" role="img"
-                  aria-label="Anonymised AI chat assistant interface">
-                  <div class="chatbot-inline__top">
-                    <div class="chatbot-inline__logo"></div>
-                    <strong>AI Chat Assistant</strong>
-                    <span>knowledge retrieval</span>
-                  </div>
-                  <div class="chatbot-inline__body">
-                    <div class="chatbot-inline__user">How does the reverse flow decision work?</div>
-                    <div class="chatbot-inline__bot">
-                      It compares condition, urgency, and handling class, then proposes route options with source
-                      traceability.
-                    </div>
-                  </div>
-                </div>
+                <iframe class="chatbot-embed__viewer chatbot-embed__viewer--compact"
+                  src="./BeInformed%20chatbot/static/portfolio_anonymized_interface.html"
+                  title="Anonymised knowledge assistant interface" loading="lazy"></iframe>
               </div>
             </div>
 
@@ -3298,34 +3276,13 @@ h4 {
             <h4>Anonymised client interface based on the live assistant layout</h4>
           </div>
           <div class="chatbot-embed">
-            <div class="chatbot-inline" role="img" aria-label="Anonymised AI chat assistant interface">
-              <div class="chatbot-inline__top">
-                <div class="chatbot-inline__logo"></div>
-                <strong>AI Chat Assistant</strong>
-                <span>source-grounded support</span>
-              </div>
-              <div class="chatbot-inline__cols">
-                <div class="chatbot-inline__docs">
-                  <div>Policy extract</div>
-                  <div>Process SOP</div>
-                  <div>Operations manual</div>
-                  <div>Training FAQ</div>
-                </div>
-                <div class="chatbot-inline__chat">
-                  <div class="chatbot-inline__user">Show me onboarding steps for inbound exceptions.</div>
-                  <div class="chatbot-inline__bot">
-                    Step 1: classify the exception and attach source photo. Step 2: validate against SOP section 3.2.
-                    Step 3: route the ticket to planning if lead-time impact is expected.
-                  </div>
-                  <div class="chatbot-inline__sources">
-                    <span>SOP 3.2</span>
-                    <span>Inbound FAQ</span>
-                    <span>Exception matrix</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <iframe class="chatbot-embed__viewer"
+              src="./BeInformed%20chatbot/static/portfolio_anonymized_interface.html"
+              title="Anonymised knowledge assistant interface" loading="lazy"></iframe>
           </div>
+          <video class="demo-video" controls preload="metadata" playsinline muted>
+            <source src="./BeInformed%20chatbot/static/demo.webm" type="video/webm">
+          </video>
         </div>
       </section>
 
@@ -3634,13 +3591,18 @@ h4 {
           operational improvement across planning, inventory, logistics, procurement, or operations control.
         </p>
         <div class="contact-cta">
-          <a class="contact-cta__button" href="mailto:Jornvschagen@gmail.com?subject=Internship%20Opportunity">
+          <a class="contact-cta__button" href="https://mail.google.com/mail/?view=cm&to=Jornvschagen@gmail.com&su=Internship%20Opportunity" target="_blank" rel="noopener noreferrer">
             Email me about internship opportunities
           </a>
-          <a class="contact-cta__button contact-cta__button--ghost" href="tel:+31649528614">
+          <a class="contact-cta__button contact-cta__button--ghost" href="tel:+31649528614" data-phone-link>
             Call me directly
           </a>
         </div>
+        <p class="contact-cta__fallback">
+          If call does not open on desktop:
+          <button type="button" data-copy-phone>Copy phone number</button>
+          <button type="button" data-copy-email>Copy email</button>
+        </p>
       </div>
 
       <div class="contact-panel">
@@ -3767,6 +3729,8 @@ const navLinks = document.querySelectorAll(".site-nav a");
 const caseJumpLinks = document.querySelectorAll(".case-jump__link");
 const warehouseToggle = document.querySelector("[data-warehouse-toggle]");
 const warehouseFrame = document.querySelector("[data-warehouse-frame]");
+const copyPhoneButton = document.querySelector("[data-copy-phone]");
+const copyEmailButton = document.querySelector("[data-copy-email]");
 
 caseStudies.forEach((caseStudy) => {
   const tabs = caseStudy.querySelectorAll(".case-tab");
@@ -3847,6 +3811,34 @@ if (warehouseToggle && warehouseFrame) {
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       setWarehouseMode(false);
+    }
+  });
+}
+
+if (copyPhoneButton) {
+  copyPhoneButton.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText("0649528614");
+      copyPhoneButton.textContent = "Number copied";
+      setTimeout(() => {
+        copyPhoneButton.textContent = "Copy phone number";
+      }, 1600);
+    } catch (_error) {
+      copyPhoneButton.textContent = "Could not copy";
+    }
+  });
+}
+
+if (copyEmailButton) {
+  copyEmailButton.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText("Jornvschagen@gmail.com");
+      copyEmailButton.textContent = "Email copied";
+      setTimeout(() => {
+        copyEmailButton.textContent = "Copy email";
+      }, 1600);
+    } catch (_error) {
+      copyEmailButton.textContent = "Could not copy";
     }
   });
 }
