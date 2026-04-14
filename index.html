@@ -1,0 +1,3927 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PortfolioJornvanSchagen</title>
+  <meta name="description"
+    content="Recruiter-focused portfolio for Jorn van Schagen, centered on logistics, supply chain management, data science, and operational improvement.">
+  <style>
+:root {
+  --page-bg: #ece8df;
+  --paper: #f8f5ee;
+  --paper-strong: #fffdf9;
+  --ink: #202326;
+  --ink-soft: #485058;
+  --line: #cfc7bb;
+  --line-strong: #a79b8a;
+  --accent: #6f5647;
+  --accent-soft: #dbd1c5;
+  --olive: #6e7767;
+  --slate: #5d6b72;
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --page-width: 1180px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--ink);
+  font-family: "Segoe UI", Arial, sans-serif;
+  line-height: 1.6;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* â”€â”€ Forklift scroll track â”€â”€ */
+.forklift-track {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 56px;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.forklift-track__rail {
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  left: 50%;
+  width: 3px;
+  transform: translateX(-50%);
+  background: var(--line);
+  border-radius: 2px;
+}
+
+.forklift-track__rail::before,
+.forklift-track__rail::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+.forklift-track__rail::before { top: -3px; }
+.forklift-track__rail::after { bottom: -3px; }
+
+/* Hash marks along the rail */
+.forklift-track__marks {
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  left: 50%;
+  width: 14px;
+  transform: translateX(-50%);
+}
+
+.forklift-track__mark {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--line);
+  opacity: 0.5;
+}
+
+/* Progress fill */
+.forklift-track__progress {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  width: 3px;
+  height: 0%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #e8a030, #d4882a);
+  border-radius: 2px;
+  transition: height 0.05s linear;
+}
+
+/* Vehicle container â€“ holds the rotated SVG */
+.forklift-track__vehicle {
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  transition: top 0.05s linear;
+  filter: drop-shadow(0 2px 8px rgba(32, 35, 38, 0.3));
+}
+
+/* The SVG is drawn as a side-view facing right.
+   rotate(90deg) makes it face downward.
+   When .is-going-up, rotate(-90deg) flips it to face upward. */
+.forklift-track__vehicle svg {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: rotate(90deg);
+}
+
+.forklift-track.is-going-up .forklift-track__vehicle svg {
+  transform: rotate(-90deg);
+}
+
+/* Tooltip showing scroll % */
+.forklift-track__tooltip {
+  position: absolute;
+  right: 58px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.forklift-track.is-scrolling .forklift-track__tooltip {
+  opacity: 1;
+}
+
+/* Fork subtle bob animation */
+@keyframes forklift-fork-bob {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(1px); }
+}
+
+.forklift-track.is-scrolling .forklift-forks {
+  animation: forklift-fork-bob 0.4s ease-in-out infinite;
+}
+
+/* Exhaust smoke puffs */
+@keyframes forklift-smoke {
+  0% { opacity: 0.6; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-6px, -4px) scale(1.8); }
+}
+
+.forklift-smoke {
+  opacity: 0;
+}
+
+.forklift-track.is-scrolling .forklift-smoke {
+  animation: forklift-smoke 0.6s ease-out infinite;
+}
+
+.forklift-track.is-scrolling .forklift-smoke:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.forklift-track.is-scrolling .forklift-smoke:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Clickable area for the track */
+.forklift-track__clickzone {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 56px;
+  height: 100%;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+.site-header {
+  position: static;
+  background: var(--page-bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.site-header__inner,
+.page {
+  width: min(var(--page-width), calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.site-header__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 72px;
+  gap: 16px;
+}
+
+.site-mark {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-nav {
+  display: flex;
+  gap: 22px;
+}
+
+.site-nav a {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.site-nav a:hover,
+.site-nav a.is-current {
+  color: var(--ink);
+}
+
+.page {
+  padding: 36px 0 64px;
+}
+
+.hero,
+.case-jump,
+.summary-band,
+.strengths,
+.work,
+.contact {
+  margin-bottom: 88px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 340px;
+  gap: 36px;
+  align-items: start;
+}
+
+.hero__panel {
+  display: grid;
+  gap: 18px;
+  width: 100%;
+  max-width: 340px;
+  justify-self: end;
+  justify-items: stretch;
+  background: transparent;
+  border: 0;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+h4,
+.summary-card strong {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0.01em;
+}
+
+h1 {
+  margin: 0 0 20px;
+  font-size: clamp(2.8rem, 5.6vw, 5.2rem);
+  line-height: 0.96;
+}
+
+h2 {
+  margin: 0;
+  font-size: clamp(1.85rem, 3vw, 2.7rem);
+  line-height: 1.04;
+}
+
+h3 {
+  margin: 0;
+  font-size: clamp(1.55rem, 2.6vw, 2.1rem);
+  line-height: 1.08;
+}
+
+h4 {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+}
+
+.hero__lead {
+  margin: 0 0 14px;
+  max-width: 70ch;
+  color: var(--ink-soft);
+  font-size: 1.03rem;
+}
+
+.hero__panel,
+.profile-card,
+.summary-card,
+.strength-card,
+.focus-panel,
+.case-study,
+.contact-panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.profile-card,
+.summary-card,
+.strength-card,
+.focus-panel,
+.case-study,
+.contact-panel {
+  border-radius: var(--radius-lg);
+}
+
+.profile-card {
+  width: 100%;
+  padding: 28px;
+  background: var(--paper-strong);
+}
+
+.profile-photo {
+  margin: 0;
+  width: 100%;
+  justify-self: stretch;
+}
+
+.profile-photo__frame {
+  display: block;
+  overflow: hidden;
+  border-radius: 22px;
+}
+
+.profile-photo img {
+  width: 100%;
+  display: block;
+  height: 420px;
+  object-fit: cover;
+  object-position: center 15%;
+}
+
+.profile-card__label,
+.summary-card__label,
+.case-study__meta {
+  margin: 0 0 10px;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-card h2 {
+  font-size: 1.7rem;
+  margin-bottom: 18px;
+}
+
+.profile-card__list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ink-soft);
+}
+
+.summary-band {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.case-jump {
+  display: grid;
+  gap: 18px;
+}
+
+.case-jump__intro {
+  display: grid;
+  gap: 8px;
+}
+
+.case-jump__links {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.case-jump__link {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper-strong);
+  transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+}
+
+.case-jump__link span {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.case-jump__link strong {
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.case-jump__link:hover,
+.case-jump__link.is-current {
+  background: #f1ebdf;
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.summary-card {
+  padding: 22px;
+}
+
+.summary-card strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1.28rem;
+  line-height: 1.15;
+}
+
+.summary-card span,
+.case-study__summary,
+.strength-card p,
+.focus-panel h3,
+.contact-panel__item span {
+  color: var(--ink-soft);
+}
+
+.section-heading {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.contact-lead {
+  margin: 0;
+  max-width: 76ch;
+  color: var(--ink-soft);
+}
+
+.contact-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.contact-cta__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: #ebe1d3;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.contact-cta__button:hover {
+  background: #e3d8ca;
+}
+
+.contact-cta__button--ghost {
+  background: var(--paper-strong);
+}
+
+.strength-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.strength-card {
+  padding: 26px;
+}
+
+.strength-card h3 {
+  margin-bottom: 12px;
+  font-size: 1.35rem;
+}
+
+.strength-card p {
+  margin: 0;
+}
+
+.focus-panel {
+  margin-top: 24px;
+  padding: 26px;
+  display: grid;
+  gap: 20px;
+}
+
+.focus-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.focus-tags span,
+.case-tab,
+.assistant-window__sources span {
+  border-radius: 999px;
+}
+
+.focus-tags span {
+  padding: 10px 14px;
+  background: var(--paper-strong);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.case-study {
+  padding: 34px;
+  margin-top: 48px;
+}
+
+.case-study:first-of-type {
+  margin-top: 0;
+}
+
+.case-study__heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.75fr);
+  gap: 22px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+.case-study__summary {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.case-study__detail {
+  margin: 10px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.case-study__detail strong {
+  color: var(--ink);
+}
+
+.case-study__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+  gap: 28px;
+}
+
+.prototype-embed {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper-strong);
+}
+
+.prototype-embed__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.8fr);
+  gap: 20px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.prototype-embed__note {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.prototype-embed__controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.prototype-toggle {
+  border: 1px solid var(--line-strong);
+  background: #efe8dd;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.prototype-toggle.is-active {
+  background: #ded3c5;
+}
+
+.prototype-embed__hint {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.prototype-embed__frame {
+  position: relative;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: #ddd6cb;
+  padding: 12px;
+  box-shadow: 0 18px 34px rgba(32, 35, 38, 0.08);
+}
+
+.prototype-embed__viewer {
+  width: 100%;
+  height: 620px;
+  border: 0;
+  border-radius: 10px;
+  display: block;
+  background: #d9ddd9;
+  pointer-events: none;
+}
+
+.prototype-embed__viewer--mock {
+  padding: 18px;
+  background: #dde2dd;
+}
+
+.warehouse-mini {
+  height: 100%;
+  border: 1px solid #a6b0aa;
+  border-radius: 10px;
+  background: #eff2ef;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  gap: 14px;
+  padding: 16px;
+}
+
+.warehouse-mini__aisles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.warehouse-mini__aisles span {
+  border: 1px solid #b6bfb8;
+  border-radius: 9px;
+  background: #f8faf8;
+  display: grid;
+  place-items: center;
+  min-height: 70px;
+  font-weight: 700;
+  color: #4b5550;
+}
+
+.warehouse-mini__aisles span.is-hot {
+  background: #f3e5d4;
+  border-color: #c7ab8b;
+  color: #463e35;
+}
+
+.warehouse-mini__route {
+  display: grid;
+  gap: 10px;
+}
+
+.warehouse-mini__line {
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid #c4b5a3;
+  background: #eadbca;
+}
+
+.warehouse-mini__stops {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.warehouse-mini__stops span {
+  border: 1px solid #c9bdaf;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: #faf7f2;
+  color: #5d5851;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.warehouse-mini__hint {
+  color: #66706a;
+  font-size: 0.86rem;
+}
+
+.prototype-embed__frame.is-interactive .prototype-embed__viewer {
+  pointer-events: auto;
+}
+
+.prototype-embed__overlay {
+  position: absolute;
+  inset: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.prototype-embed__frame.is-interactive .prototype-embed__overlay {
+  display: none;
+}
+
+.prototype-embed__overlay-card {
+  max-width: 320px;
+  background: rgba(248, 245, 238, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 14px 28px rgba(32, 35, 38, 0.08);
+}
+
+.prototype-embed__overlay-card strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.prototype-embed__overlay-card p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.case-canvas {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper-strong);
+}
+
+.canvas-head {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.canvas-head h4 {
+  margin: 0;
+}
+
+.milk-run-board,
+.returnflow-board,
+.audit-board,
+.cycle-board,
+.knowledge-board {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #f4efe6;
+  padding: 20px;
+}
+
+.cycle-board {
+  display: grid;
+  gap: 18px;
+}
+
+.returnflow-app {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #1e252d;
+  color: #edf2f7;
+}
+
+.returnflow-app__sidebar {
+  background: #161c22;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px 16px;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+}
+
+.returnflow-app__brand,
+.returnflow-app__strategy {
+  display: grid;
+  gap: 6px;
+}
+
+.returnflow-app__brand strong,
+.returnflow-app__header strong {
+  font-size: 1rem;
+}
+
+.returnflow-app__brand span,
+.returnflow-app__strategy span,
+.returnflow-app__header span,
+.returnflow-app__item em,
+.returnflow-app__kpis span,
+.returnflow-app__kpis em,
+.returnflow-app__label,
+.returnflow-app__metric span,
+.returnflow-app__days,
+.returnflow-app__list span {
+  color: #9ba7b4;
+}
+
+.returnflow-app__menu {
+  display: grid;
+  gap: 8px;
+}
+
+.returnflow-app__item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #cbd5e1;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.returnflow-app__item--active {
+  background: #2f72c9;
+  color: white;
+}
+
+.returnflow-app__strategy {
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.returnflow-app__main {
+  padding: 22px;
+  display: grid;
+  gap: 18px;
+  background: #222b34;
+}
+
+.returnflow-app__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.returnflow-app__toggle {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+.returnflow-app__kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.returnflow-app__kpis article,
+.returnflow-app__card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: #2a343e;
+}
+
+.returnflow-app__kpis article {
+  padding: 14px;
+  display: grid;
+  gap: 5px;
+}
+
+.returnflow-app__kpis strong {
+  font-size: 1.45rem;
+  color: white;
+}
+
+.returnflow-app__kpis em {
+  font-style: normal;
+  font-size: 0.72rem;
+}
+
+.returnflow-app__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.returnflow-app__card {
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+
+.returnflow-app__label {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.returnflow-app__metric {
+  display: grid;
+  gap: 6px;
+}
+
+.returnflow-app__metric div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.returnflow-app__metric strong,
+.returnflow-app__list strong {
+  font-size: 0.92rem;
+  color: white;
+}
+
+.returnflow-app__bar {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.returnflow-app__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #4f93f7;
+}
+
+.returnflow-app__alert {
+  border-left: 3px solid;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+}
+
+.returnflow-app__alert--warn {
+  border-color: #f0b34a;
+  background: rgba(240, 179, 74, 0.12);
+}
+
+.returnflow-app__alert--flag {
+  border-color: #ef6b6b;
+  background: rgba(239, 107, 107, 0.12);
+}
+
+.returnflow-app__alert--ok {
+  border-color: #46b07a;
+  background: rgba(70, 176, 122, 0.12);
+}
+
+.returnflow-app__chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 140px;
+  padding-top: 12px;
+}
+
+.returnflow-app__chart span {
+  flex: 1;
+  border-radius: 6px 6px 0 0;
+  background: #4f93f7;
+}
+
+.returnflow-app__days {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.75rem;
+}
+
+.returnflow-app__list {
+  display: grid;
+  gap: 10px;
+}
+
+.returnflow-app__list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.staff-board {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper-strong);
+  overflow: hidden;
+}
+
+.staff-board__header,
+.staff-board__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 160px;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.staff-board__header {
+  background: #e8dfd2;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.staff-board__row {
+  border-top: 1px solid var(--line);
+}
+
+.staff-board__row span {
+  color: var(--ink-soft);
+}
+
+.cycle-bi-mini,
+.cycle-bi-board {
+  background: #3a3a3a;
+  border: 1px solid #4a4a4a;
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.cycle-bi-mini {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cycle-bi-mini__panel,
+.cycle-bi-board__panel {
+  background: #060606;
+  border: 1px solid #4a4a4a;
+  color: #f6f1e8;
+}
+
+.cycle-bi-mini__panel {
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 150px;
+}
+
+.cycle-bi-mini__panel p,
+.cycle-bi-board__panel h5 {
+  margin: 0 0 12px;
+  color: #f47a20;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.cycle-bi-mini svg,
+.cycle-bi-board svg {
+  width: 100%;
+  height: auto;
+}
+
+.cycle-bi-mini polyline,
+.cycle-bi-board polyline {
+  fill: none;
+  stroke: #f47a20;
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.cycle-bi-mini text,
+.cycle-bi-board text {
+  fill: #f5f4ef;
+  font-size: 11px;
+}
+
+.cycle-bi-mini__bars,
+.cycle-bi-board__bars {
+  display: grid;
+  gap: 10px;
+}
+
+.cycle-bi-mini__bars div,
+.cycle-bi-board__bars div {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 10px;
+}
+
+.cycle-bi-mini__bars span,
+.cycle-bi-board__bars span,
+.cycle-bi-mini__bars em,
+.cycle-bi-board__bars em,
+.cycle-bi-mini__filters span,
+.cycle-bi-board__filters span,
+.cycle-bi-board__legend span {
+  color: #f5f4ef;
+  font-style: normal;
+  font-size: 0.82rem;
+}
+
+.cycle-bi-mini__bars strong,
+.cycle-bi-board__bars strong {
+  display: block;
+  height: 18px;
+  background: #e86e1a;
+}
+
+.cycle-bi-mini__filters,
+.cycle-bi-board__filters {
+  display: grid;
+  gap: 10px;
+}
+
+.cycle-bi-mini__filters div,
+.cycle-bi-board__filters div {
+  border: 1px solid #6b6b6b;
+  background: #404040;
+  padding: 10px 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.cycle-bi-mini__filters strong,
+.cycle-bi-board__filters strong {
+  color: white;
+  font-size: 0.95rem;
+}
+
+.cycle-bi-mini__stacked,
+.cycle-bi-board__stacked {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+  min-height: 120px;
+}
+
+.cycle-bi-board__stacked {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  min-height: 150px;
+}
+
+.cycle-bi-board__stacked--teams {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.cycle-bi-mini__stacked span,
+.cycle-bi-board__stacked span {
+  display: grid;
+  align-content: end;
+  gap: 0;
+  height: 100%;
+}
+
+.cycle-bi-mini__seg,
+.cycle-bi-board__seg {
+  display: block;
+}
+
+.cycle-bi-mini__seg--a,
+.cycle-bi-board__seg--a {
+  background: #0f5c56;
+  height: 34%;
+}
+
+.cycle-bi-mini__seg--b,
+.cycle-bi-board__seg--b {
+  background: #5f9acb;
+  height: 33%;
+}
+
+.cycle-bi-mini__seg--c,
+.cycle-bi-board__seg--c {
+  background: #e86e1a;
+  height: 33%;
+}
+
+.cycle-bi-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cycle-bi-board__panel {
+  border-radius: 12px;
+  padding: 14px;
+  min-height: 210px;
+}
+
+.cycle-bi-board__panel--wide {
+  grid-column: 1 / -1;
+  min-height: 170px;
+}
+
+.cycle-bi-board__bars--small strong {
+  height: 16px;
+}
+
+.cycle-bi-board__donut-wrap {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 140px;
+}
+
+.cycle-bi-board__donut {
+  width: 120px;
+  height: 120px;
+}
+
+.cycle-bi-board__ring {
+  fill: none;
+  stroke-width: 18;
+  transform: rotate(-90deg);
+  transform-origin: 60px 60px;
+}
+
+.cycle-bi-board__ring--base {
+  stroke: #1e1e1e;
+}
+
+.cycle-bi-board__ring--c {
+  stroke: #e86e1a;
+  stroke-dasharray: 132 214;
+}
+
+.cycle-bi-board__ring--b {
+  stroke: #5f9acb;
+  stroke-dasharray: 47 299;
+  stroke-dashoffset: -132;
+}
+
+.cycle-bi-board__ring--a {
+  stroke: #0f5c56;
+  stroke-dasharray: 35 311;
+  stroke-dashoffset: -179;
+}
+
+.cycle-bi-board__legend {
+  display: grid;
+  gap: 10px;
+}
+
+.cycle-bi-board__legend div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cycle-bi-board__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.cycle-bi-board__dot--a {
+  background: #0f5c56;
+}
+
+.cycle-bi-board__dot--b {
+  background: #5f9acb;
+}
+
+.cycle-bi-board__dot--c {
+  background: #e86e1a;
+}
+
+.cycle-bi-board polyline.cycle-bi-board__line--orange {
+  stroke: #e8a91a;
+}
+
+.cycle-bi-board polyline.cycle-bi-board__line--blue {
+  stroke: #69a8dc;
+}
+
+.milk-run-board {
+  display: grid;
+  gap: 18px;
+}
+
+.milk-run-board__timeline,
+.milk-run-board__service {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.milk-run-board__slot,
+.milk-run-board__service article,
+.milk-run-board__lane,
+.returnflow-board__kpis article,
+.hub-node,
+.decision-sheet,
+.returnflow-board__network,
+.returnflow-board__training,
+.audit-board__headline article,
+.knowledge-board__docs span,
+.knowledge-board__arrow,
+.knowledge-board__answer {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-strong);
+}
+
+.milk-run-board__slot,
+.milk-run-board__service article,
+.returnflow-board__kpis article,
+.hub-node,
+.audit-board__headline article {
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.milk-run-board__slot span,
+.milk-run-board__service span,
+.milk-run-board__lane p,
+.hub-node span,
+.decision-sheet__item span,
+.training-table__footer,
+.audit-board__row span,
+.knowledge-board__answer p,
+.knowledge-board__hint,
+.returnflow-board__kpis span,
+.audit-board__headline span {
+  color: var(--ink-soft);
+}
+
+.milk-run-board__comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.milk-run-board__lane {
+  padding: 16px;
+}
+
+.milk-run-board__lane span,
+.returnflow-board__label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.milk-run-board__bar {
+  height: 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ded4c8;
+  margin-bottom: 12px;
+}
+
+.milk-run-board__bar--short {
+  width: 42%;
+}
+
+.milk-run-board__bar--long {
+  width: 88%;
+}
+
+.returnflow-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.returnflow-board__kpis {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.returnflow-board__network,
+.returnflow-board__decision,
+.returnflow-board__training {
+  padding: 16px;
+  background: #f0e9de;
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.decision-sheet {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.decision-sheet__item {
+  display: grid;
+  gap: 4px;
+}
+
+.decision-sheet__action {
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #ded3c5;
+  font-weight: 700;
+}
+
+.decision-sheet__signals,
+.knowledge-board__sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.decision-sheet__signals span,
+.knowledge-board__sources span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f1ece3;
+  padding: 8px 12px;
+}
+
+.training-table {
+  display: grid;
+  gap: 10px;
+}
+
+.training-table__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-strong);
+}
+
+.training-table__footer {
+  margin-top: 12px;
+}
+
+.audit-board {
+  display: grid;
+  gap: 16px;
+}
+
+.audit-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(110px, 1fr));
+  gap: 10px;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #f4efe6;
+  padding: 18px;
+}
+
+.audit-flow--panel {
+  min-height: 100%;
+}
+
+.audit-flow__node,
+.audit-flow__arrow {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-strong);
+  min-height: 86px;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 12px 10px;
+}
+
+.audit-flow__node {
+  gap: 6px;
+  line-height: 1.35;
+}
+
+.audit-flow__node span,
+.audit-flow__note {
+  color: var(--ink-soft);
+}
+
+.audit-flow__arrow {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+}
+
+.audit-flow__note {
+  margin-top: 12px;
+  max-width: 720px;
+}
+
+.audit-board__headline {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.audit-board__table {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.audit-board__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 160px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--paper-strong);
+  border-top: 1px solid var(--line);
+}
+
+.audit-board__row--head {
+  background: #e8dfd2;
+  border-top: 0;
+  font-weight: 700;
+}
+
+.flag,
+.ok {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+
+.flag {
+  background: #ead7cf;
+}
+
+.ok {
+  background: #dfe6d9;
+}
+
+.knowledge-board {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) 140px minmax(260px, 1fr) minmax(280px, 1.1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.knowledge-board__docs {
+  display: grid;
+  gap: 10px;
+}
+
+.knowledge-board__docs span,
+.knowledge-board__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  text-align: center;
+}
+
+.knowledge-board__arrow {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.knowledge-board__answer {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.knowledge-board__answer p {
+  margin: 0;
+}
+
+.knowledge-board__video {
+  height: 100%;
+  min-height: 260px;
+  object-fit: cover;
+}
+
+.chatbot-embed {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #e6e0d5;
+  padding: 12px;
+  box-shadow: 0 16px 30px rgba(32, 35, 38, 0.08);
+}
+
+.chatbot-embed--compact {
+  padding: 8px;
+}
+
+.chatbot-embed__viewer {
+  width: 100%;
+  height: 620px;
+  border: 0;
+  border-radius: 12px;
+  display: block;
+  background: #f4f7f9;
+}
+
+.chatbot-embed__viewer--compact {
+  height: 360px;
+}
+
+.chatbot-inline {
+  min-height: 620px;
+  border: 1px solid #c8c2b7;
+  border-radius: 12px;
+  background: #f7f4ee;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+}
+
+.chatbot-inline--compact {
+  min-height: 344px;
+}
+
+.chatbot-inline__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #d7d1c6;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fdfbf7;
+}
+
+.chatbot-inline__top strong {
+  font-size: 0.96rem;
+}
+
+.chatbot-inline__top span {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+.chatbot-inline__logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #cfcbc2;
+  filter: blur(1.5px);
+}
+
+.chatbot-inline__body {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.chatbot-inline__user,
+.chatbot-inline__bot {
+  border: 1px solid #d5cec2;
+  border-radius: 10px;
+  padding: 12px 14px;
+  line-height: 1.45;
+}
+
+.chatbot-inline__user {
+  background: #ece4d8;
+}
+
+.chatbot-inline__bot {
+  background: #fffdf9;
+}
+
+.chatbot-inline__cols {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.65fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.chatbot-inline__docs {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.chatbot-inline__docs div {
+  border: 1px solid #d5cec2;
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: #fcfaf5;
+  color: #4f565d;
+}
+
+.chatbot-inline__chat {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.chatbot-inline__sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chatbot-inline__sources span {
+  border: 1px solid #d5cec2;
+  border-radius: 999px;
+  padding: 6px 11px;
+  background: #fffdf9;
+  color: #535a61;
+  font-size: 0.8rem;
+}
+
+.case-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.case-tab {
+  border: 1px solid var(--line);
+  background: var(--paper-strong);
+  color: var(--ink-soft);
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.case-tab.is-active {
+  background: var(--accent-soft);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.case-panel,
+.visual-panel {
+  display: none;
+}
+
+.case-panel.is-active,
+.visual-panel.is-active {
+  display: block;
+}
+
+.case-panel p,
+.case-panel ul {
+  margin-top: 0;
+}
+
+.case-panel ul {
+  padding-left: 18px;
+  color: var(--ink-soft);
+}
+
+.case-study__visual {
+  min-height: 360px;
+}
+
+.comparison-board,
+.route-board,
+.impact-grid,
+.inspection-stage,
+.camera-frame,
+.decision-flow,
+.warehouse-map,
+.metric-dashboard,
+.review-board,
+.document-stack,
+.assistant-window,
+.value-board {
+  background: var(--paper-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  min-height: 360px;
+}
+
+.comparison-board,
+.impact-grid,
+.metric-dashboard,
+.value-board {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.comparison-board {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.comparison-board__column {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  display: grid;
+  gap: 18px;
+}
+
+.comparison-board__label {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.vehicle-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 68px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #f0ebe2;
+  font-weight: 700;
+}
+
+.vehicle-card--train {
+  min-height: 88px;
+}
+
+.route-line {
+  border-radius: 999px;
+  background: var(--accent-soft);
+  position: relative;
+}
+
+.route-line--single {
+  height: 18px;
+}
+
+.route-line--train {
+  height: 54px;
+}
+
+.route-line::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed var(--line-strong);
+  border-radius: inherit;
+}
+
+.comparison-note {
+  color: var(--ink-soft);
+}
+
+.route-board {
+  padding: 24px;
+}
+
+.route-board__header,
+.route-board__row,
+.review-board__row,
+.contact-panel {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.route-board__header {
+  margin-bottom: 24px;
+  color: var(--ink-soft);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+
+.route-board__rows {
+  display: grid;
+  gap: 14px;
+}
+
+.route-board__row {
+  align-items: center;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.dots {
+  height: 18px;
+  border-radius: 999px;
+  background: #f2eee7;
+  border: 1px solid var(--line);
+  position: relative;
+}
+
+.dots--dense {
+  width: 88%;
+}
+
+.dots--medium {
+  width: 64%;
+}
+
+.dots--light {
+  width: 36%;
+}
+
+.dots::after {
+  content: "";
+  position: absolute;
+  inset: 3px auto 3px 3px;
+  width: calc(100% - 6px);
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.impact-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.impact-grid article,
+.metric-dashboard article,
+.value-board article {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.impact-grid span,
+.metric-dashboard span,
+.value-board span {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.impact-grid strong,
+.metric-dashboard strong,
+.value-board strong {
+  font-size: 1.2rem;
+}
+
+.inspection-stage,
+.camera-frame,
+.warehouse-map,
+.document-stack,
+.assistant-window,
+.review-board {
+  padding: 24px;
+}
+
+.inspection-stage {
+  display: grid;
+  gap: 24px;
+}
+
+.inspection-lane,
+.inspection-boxes,
+.decision-flow,
+.assistant-window__sources {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.inspection-lane span,
+.inspection-box,
+.decision-flow__node,
+.document-stack__file,
+.assistant-window__question,
+.assistant-window__answer,
+.assistant-window__sources span {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #f0ebe2;
+}
+
+.inspection-lane span,
+.inspection-box,
+.decision-flow__node,
+.document-stack__file {
+  padding: 16px;
+}
+
+.inspection-lane span {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+}
+
+.inspection-boxes {
+  align-items: stretch;
+}
+
+.inspection-box {
+  min-width: 150px;
+  flex: 1;
+}
+
+.camera-frame {
+  display: grid;
+  gap: 18px;
+}
+
+.camera-frame__view {
+  min-height: 210px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #f1ece3;
+  position: relative;
+  overflow: hidden;
+}
+
+.camera-frame__tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-strong);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.camera-frame__grid {
+  position: absolute;
+  inset: 16px;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+.camera-readout {
+  display: grid;
+  gap: 12px;
+}
+
+.camera-readout div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.camera-readout span {
+  color: var(--ink-soft);
+}
+
+.decision-flow {
+  min-height: 360px;
+  align-items: center;
+  justify-content: center;
+}
+
+.decision-flow__node {
+  min-width: 140px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.warehouse-map {
+  display: grid;
+  gap: 22px;
+}
+
+.warehouse-map__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.aisle {
+  min-height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #f0ebe2;
+  font-weight: 700;
+}
+
+.aisle.is-highlight {
+  background: #e2d8cc;
+  border-color: var(--line-strong);
+}
+
+.warehouse-map__route {
+  padding: 16px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.metric-dashboard {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.review-board {
+  display: grid;
+  gap: 14px;
+}
+
+.review-board__row {
+  align-items: center;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.review-board__row span {
+  color: var(--ink-soft);
+}
+
+.document-stack {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+}
+
+.document-stack__file {
+  background: var(--paper-strong);
+  font-weight: 700;
+}
+
+.assistant-window {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.assistant-window__question,
+.assistant-window__answer {
+  padding: 18px;
+}
+
+.assistant-window__answer {
+  background: var(--paper-strong);
+}
+
+.assistant-window__sources span {
+  padding: 10px 14px;
+  background: var(--paper-strong);
+}
+
+.demo-video {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #e8e1d6;
+  display: block;
+}
+
+.value-board {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.contact-panel {
+  padding: 26px;
+  border-radius: var(--radius-lg);
+}
+
+.contact-panel__item {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+}
+
+.contact-panel__item strong {
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .case-jump__links,
+  .case-study__heading,
+  .case-study__layout,
+  .prototype-embed__header,
+  .summary-band,
+  .strength-grid,
+  .contact-panel,
+  .comparison-board,
+  .impact-grid,
+  .metric-dashboard,
+  .value-board,
+  .audit-flow,
+  .cycle-bi-mini,
+  .cycle-bi-board,
+  .returnflow-app__kpis,
+  .returnflow-app__grid,
+  .milk-run-board__timeline,
+  .milk-run-board__service,
+  .milk-run-board__comparison,
+  .returnflow-board,
+  .returnflow-board__kpis,
+  .hub-grid,
+  .audit-board__headline,
+  .knowledge-board {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-panel {
+    display: grid;
+    gap: 18px;
+  }
+}
+
+@media (max-width: 720px) {
+  .site-header__inner,
+  .page {
+    width: min(100% - 20px, var(--page-width));
+  }
+
+  .site-header__inner {
+    min-height: 64px;
+  }
+
+  .site-nav {
+    gap: 14px;
+  }
+
+  .page {
+    padding-top: 24px;
+  }
+
+  .hero,
+  .case-jump,
+  .summary-band,
+  .strengths,
+  .work,
+  .contact {
+    margin-bottom: 64px;
+  }
+
+  .case-study {
+    padding: 22px;
+    margin-top: 32px;
+  }
+
+  .case-study__visual,
+  .comparison-board,
+  .route-board,
+  .impact-grid,
+  .inspection-stage,
+  .camera-frame,
+  .decision-flow,
+  .warehouse-map,
+  .metric-dashboard,
+  .review-board,
+  .document-stack,
+  .assistant-window,
+  .value-board {
+    min-height: auto;
+  }
+
+  .prototype-embed {
+    padding: 16px;
+  }
+
+  .prototype-embed__viewer {
+    height: 420px;
+  }
+
+  .prototype-embed__controls {
+    display: grid;
+    justify-content: stretch;
+  }
+
+  .training-table__row,
+  .audit-board__row,
+  .staff-board__header,
+  .staff-board__row {
+    grid-template-columns: 1fr;
+  }
+
+  .cycle-bi-board__donut-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .chatbot-embed__viewer {
+    height: 460px;
+  }
+
+  .chatbot-embed__viewer--compact {
+    height: 300px;
+  }
+
+  .chatbot-inline__cols {
+    grid-template-columns: 1fr;
+  }
+
+  .audit-flow__node,
+  .audit-flow__arrow {
+    min-height: 72px;
+  }
+
+  .returnflow-app {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__panel {
+    justify-items: stretch;
+  }
+
+  .profile-photo {
+    width: min(100%, 320px);
+    justify-self: start;
+  }
+}
+
+</style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <p class="site-mark">Jorn van Schagen</p>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#cases">Cases</a>
+        <a href="#strengths">Strengths</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero" id="top">
+      <div class="hero__copy">
+        <p class="eyebrow">Portfolio</p>
+        <h1>Turning complex logistics problems into practical flow decisions.</h1>
+        <p class="hero__lead">
+          I am Jorn van Schagen, a student at HAN Arnhem studying International Business with a
+          specialisation in supply chain management. My work sits at the intersection of operations,
+          analysis, digital tooling, and process improvement.
+        </p>
+        <p class="hero__lead">
+          I am especially interested in how supply chain data can improve planning quality, inventory accuracy,
+          transport efficiency, and operational decision quality across end-to-end processes.
+        </p>
+      </div>
+
+      <aside class="hero__panel">
+        <figure class="profile-photo">
+          <div class="profile-photo__frame">
+            <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAI/AUADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDhzwcUnb/61B5PX0o/HHtVEAM9Ov4UvOcD+VB5xzRnqTzQAnIpxP8AkUnfkGl78YzTATPpijJ/yKMZHajGD0oABx060DjtRkc46UDOKQDgTk9PwFG7ijGT057U3j60AKCe38qXOfT8qRQCPrSj8aADp6flSg8c45pAPmyfxFKD0wfxpABOBnH4Uoz6D8qTOf8AGjoeOlAACVwOD9BQcZ4wRmkyaPwpgOweOentQG5J4/Kkxz/KgHBwKAF+8SRgj6daXOW/+tSZyPejPp1oAMHvj8qOAB6UD3o+nFACkgnrzSAnHQdaXGAM96QcHjOKAHA5AJx+VID16c+1GcnPNJ1zwTQA4HB/zzTQ3sPXpSnI74o5z2wDQAoJzyMU7POePpimgYOKBgdaAAn5sdfwpT05xjvkUnPA5Bpf4s/lQAuSB+vSgt8vQflSY5wKT360AO3nn/DmgHBHGKQA/j9KBigCA49KTnPfHoaG4ajvj8qAFyR6/hSA5o6n6+tA4PWgBevejPrRjmjFO4Bk9qX3pAP/ANVL3HegAx7mkI4oGc8DpSZOcc4pAO/h5oHIxxmkz6HANKOnYUAIAMZ7+tO6jA4FNH407v70AJ3707p9KQcnNSRQ+dcxRdnYA+w70m7DSuyza2atAZ7mTy48ZA9arSBS52BinY4q5dSrK4JA8sfLGg71LBZSyHdMyxjslZc9jdUrmcqMw+VCR60xlYHkYroRagDCY+ppyWUafewSepIpe1K+r+ZzgxhepJ4oyMnjmulEEIIxGh/4DTWliXK+XAPqtHtQ+r+ZzvbGR9KTHFbsunW10FFuVhbqxPINM/sOKOylZpVe5YgIoPCjPJqlUTM5UZIxjxSHr2p7oY8h1YAj5SwxketN571ommZOLW4DHoKM8Gk+tLxnJ5piFxxSDPeg80D+tAB1BzTs9jxSD3NHSgBfc0HO7HqKDn2oAyR2+lAB6UEYPXilPFJ3oAXGcUA8jrSZ570vI9qADuKXvQewPSgklhn1oArNyePzo7cHgUd80YPXP5UAKMnkYpDwetB4PSlzQAmeRnP5UoJGBnn2pBkUetAC59SaOKTpyOnpSjg0AGcD3o7jtmk7980o9e9ACkfQUHvxSEgDg0vf3oAARTgcDGcU0Dn1pSoBz7UAGCpz+tWrVPLLzHAAjIB+tMEeCp6M5AXHYZpLifNwkMbZUsFAH15zWM5HTSp9WW4B88eOJCvB/uj2q4VAcIG2ooBZj1PtUUUYSa4lJ/iwv0xVPUTI08ZTO2XCk/3SKwZ1pGhJdhY/3fAztB9z0FU7q+kjcQRBnlxlj2X2qYr/AKZbxjIRSx/HHH9apSXAhuZN33gcc9qaQNlzymkGJpiB/snmnJAkS4XJGOrHrVCK9luCfIt2bHG7FTi2kdlNxPtBGdqck0WBMm3gNtjyxP5VYgzFKSzcAbj7imJJDChWJcDoSxpBLngYIPX39KGho2reZZEEeFZGXLZGSR/hWfq+iPK32qxjBTADJ0P4VLaScjJG3jNdBCgkRedpb0qVJpkzpqR50ysnVSMflSc4xnAr0qTQ9NEOyeNMnPy9B+Nee6jb/ZryREKFN3y7TniumE+Y4qlLkK2cZ74peg4FIe4xijGeMVqYik46jrSj2pMAH1pT1FAC5waD1x70hwWHqaO/Q0DHEjpSYyRnrR+HNK31xQAZ54NAzR0PvS7TyCAKQhDkfWlXluaRjgAnJFLnA/GmBW53UYGTmk3Z6+lL06UAGTSj6Ug9jS7vegLAT70n0o44ozmgBe/OM0D0pM9eppeTQAnBpSTQc8etA7c/rQAYGOKM+xyKOuaP5fSgBxzQpy4Ud6b+FXLeNVAZhywyPaplKyLpx5mOZY3n+Z2Ujkegpohe3lVlRWQnKuvIP+Bq7Fbb32nq3XFRW12SWEKbMNjP8L/hXK5HoRjYsWttcF9zkFW6j2q1/Z7QfN95c/lVu0tW8rc/y7udoNXBFldpqWzTlMW4i2oWUfMORWLrMH+lmZBuSVAwFddNZb1OOv5VRuNOLqq44U8U0xSic5FcT/daTp17BRWhaqs6AeZDJjtnBFV5dNkC7FXJdyzH0HYUyK38q4IIITpk1TJSZcewiRt5WQkHpnIFIQzyBUjkI64KkYHrU8VncKA0NxlfbrVqG3upmCyTtg8dcVNy0hlou8FyhZEwMDjJ7CuotBvkt1YYEf7xwP4scAVlWtoqSAq/7mE7jnu3rV6AMbYswbLk49hUMbDVcXVvczSKSqr5gwemO1efu5kctyQTkZ9K9Kh8vbHAy5ixhgf4q4nWdOggufNtiUgYkMCPuMM5XFbUXqcldaGT2J9qFJ7A8etJkZoHWuk4xTg8d6UUi9cDijvxTAk2c9selGxtwwMUwHB4/OlDnHPJoAUDB5HNB60m/wBT9aQ0AOA+bil56/zpOnXk0p5AoEKOfejHT0zSAc0oPqcUAVccc9falxkc5pD2zmg9BjNAAOMmlxzj8aTnJ4pT0NAA3H196BwKOMjH+NHJzQIP60ozwe3ek7Up6Y/lQNAP1oGaMnPXijHfIoAMY6UUvfikz+VADlVpGVQMljgVptDmZVH8HygVSscG8j46Z/lWwFy47HGawqs7MNHS5KgEURkPBJ2j8qi0+wk3jzBGsaHoOpNF8D/Z7KP+ei/yzV+ziKwjPU81z3O2KLqAkCrCpxio4V4qccdRSNbAqgdaVolYYxSg5pR14zVEtFRrBDJuxUT2aAsCoOeoxWkFNNZA3amTYzBaKpyi49qI7b95k5xmr/lY6d6sQReoqRkEdq8uEwQnfipb+KW2tXeLLMVwp9K0I1wAKmePzItrDIpA0ZFjC014idSUA5rl/GNqLLWiqcCZBIR7jiuvnc2qusfE4UurAdhziuU8Ysbua3vDyduxj69wa0p/EctZe6c03JIJ/GjdzQeKTOcdOK7Dzxff8KXpmgc/SkzigBcenWlB45FJilz37UAL+HT2oz0IFA/KjuDQIXPIpe2MUhz7HFOx29KAE6HFA+8KXoM0Drk0AVse9HHX+dBz39u1HQc0AJjke5pRz6/jR/L+dHXtQAUd6B7Uu7rQIO/T8qQc/wD16XrQPc0AH0Ao7mjA7UhwG4zQMX8uKOhz+lBPHPNHHTOKAHwHZcRsOzVvQsGG4/3cfSueGdwIFatlMFRs9xWFVHXhn0LrDzN0XOXVG/FeDWzGmFXjoKyrQl5wfQda2l+4Olcx6ESRAAoqTr0qNTxmpB6UywUU9enP5Um4AjJ69KdkCmJi9PSk69aDSg4piHADvViIVAGwKlhJxzSAuKowODVnZlc4qGA/uz9atpgqAKRLMq/ti00cidVBU+4PFcx4ntRHoajgkOMfQHFdneYjiLjHykda5DxHMZdGuAf+WZ+X6ZFVDcxqr3TiupPT3oGeM0H1AyKQ8sM967Eea0OP1xSAnGKT6DmlJyT7/pTJF7UZHJpM8d6Xq3PFAxwJwO9KPwzTBgcenP1pwI+lACnj8fSgd/SkAyfWnDPf8KAFx+dHQ0mce2fWlHJGefT2oEVj1waOp6UEjPB70ik+9AAegxnrSk4PNIcdjyDS8ZpgGDzige2etJ0BHNA+9xgUhCn2oxzg9KMnn1pMkng0DHcY60d6TPX8uKU0AIepJoAPOaU0n8zQAucYq3CxEY29cc81UPrmrcUM0AXzYnTcMgNxx61lM3oXua9i4EwA7gVupnaK5rTWzfwjJ5J4rogxz71zNHpw2LC8ipUwarBwvfmpo5FHUikWSlAeSKXaM00TRkfeFP3DGQRimhXDFKBxTN2fwpQecmmIeKniGSAKrlsDNRvfeT/AWoC5s7ti+lMF3tbrWTHqMk5wqN+ArStbbzcF92T60hXJrl/tFnMAf4a55NPbU4FhyoWQkOW6CunNmYlbjIIIrmJUddLvDCSPKbLD8s0CspaHD39nJp+oT2k/+sibacd/Q1XI+lb/AIyj/wCJ552f9fbxyfjjH9K5/r+ddcdjzK0eWbQppM9eo4pfxowTz6VRkKMYx/WgYB9aTqMg0DqKAFX3pw4H8qTv7UKcE4piHZyTk0opMY9f8KAcDPNIB3b296VeW69O1ID0oUjdwDzTArt26UmMHIxS9qTIoAX0I+lIP50A0Hr3yKADOWH60uaQHnmk65oAU9hQR60ZHFB+oxQAo5+vege3X1oAyKMYHA5oAQtkZI+tA70Y49KXvjigC1paLLqlqjjKmUZravhLds8ki8KSuT25rn7eb7PdwzA4KOrV2lvbAPdFz+7eTKZ9MVhVPSwdnBmFp8ZTVIVPbNdFtPQdax5YvI1uAqQVfnI+tbqDisGdKVhoh3Z3GmSWbOMLIV9waJpJQpEQyfes6e21WVMK8URPdck/nQgZLLZNGDuuAD6k4p8TyBAFmBx3znNc/ceHb+SRd0m7uxZycmrsGm3Kz5ieOFMD5OuaYjoLdn7k1cUbsDvVC13AgE59a0oyAw6Uh2JnihtLNrm9cInQZ7n2rn7rxFawljBA7gEDOO57V0Gu2Q1axgDZBQEqAfzrmRoUMSGLDqmckH1piJbDxbay3Jh8mQOuSwHOK6ay1y3mVWibcp6/KQRXP2Oj2Vu+RBGPrya6KFoRGqFgEHRVGBQKxrrcRzRkI4OR2rnreeC1vr+3uRuWdggGPXrW3aorAlBhR0rA1a1Z9XXywMmRcn6DJpDS1OS8aK0OupAf+WVsiD6c1z3Oa6z4g2+NahuByskWzI9V/wD11yfAPeuqD0PNxH8RhyT60ZpOvINKP51ZgKSe/wCNLnPP603PNOHSgAUjpS8k96O/IoHWmA4emKAOCO1JxSnr7UCFyO1KOvtSYHQZ6UoI3UAVutAyBRnmjpzQADnr0oJwOKO9HQ8igAHJ5o/Ol+vWkPWgAzz/AIUAYBGKOppR0wKAEH9aU/5NJ1GeKBnPpQAH/PFH8FGfwp8MLzZCAEgFjk44HWgBgGe/4V18E7yeG7ebksFBP06Z/SuUMUaQo3mq7ufuqc7V9T7+1dloib9HswPumPBz9TWFU78G7NlOWM/Z7GcEkFyK2Iz2qH7LvgmtGAEY+eFh2qa3ycbuveuc7mS+VnnFNKunQD8asDp6UjL+NMCq6M/3m+uBTWjAHyjNTOyjvTdxYAKOtMdhI02nAq1F1FMiTC8nJqWNdp9qLAacNwrRrGy8DgGs/UIjHNuVhg84q5bWzTOSDhVHU9KTUNPcW8suD8g3BuxoJ0M1CPQVdtyCw/lWYj9M96uWzfOKB2OltQDDxVK+jjW/t5DglQzMPXpj+VWrKPbFvJ69qr3sLSXyBQMsvFBn1Ob8b2UcvhwXJ4khmUr/AMCODXnRPP8AKu28e65A8MWkW0olKMJJ3XkBh0WuINdFNHDiWnLQCeetLnmkOAKU+3etTlDkCl744oAzxmlHApAKev8AhS9fpTSOeBQOeKYDj05oAoHT1pRwOnHoKBC+9A4fPXtSD0/SnDPf60AVRxxS8DoaCf5elJ154/lQAp6CkI57UeuTS0AA96ABSD+VBoAX/wDXR2HNJ78Uv1NABjBzQDk+lJ15oHFMBec8/pTTz15pd3v9eaMdev0pAHXA4/Cuy8L3iT6Stvx50GQR7Z4Ncb+tSW1xNZzrPbOUlXv6/WonG5vRqezlc9DY4OOmKjiZGO+NgQehHeuWl8V381s0WyFGYYMg61seGJfN0WNT1jdl/WuaUbHoRrRm7I2kbOCaV2GKao/Kq13I7yC3i6kZY+gpI2QxmMkpC9BU4/dsDgkelMhg2qOlSFSQQM0DGNduzYjiwO5ZsH8qt22ZmAx9eaqbCMnHPrRucE4GPWhAb7SlwIbd0jQD5nIzn6CiVpjatA0pkD9TjFZEDS8dcVrWyDblpFHuTTJZlz2RXoKZazeVMEc9TgGuglm0+GEme7gGByd4rnpCt40zRY8tVLK2PvYpBc660H+jIvXjrXNfEjzItEtp4ZGjYS7CVOMgjp+ldFpZP2CHd121zXxNmCaFaQ4yZLjP4Af/AF6qG5hUeh5icKcDr396Tp9KceSfrTRnocV1I81u4vXr3pTgA00jHelznpQIcB1/OjPQU0du1Ke39KBDh64pTx0NJu649aUd/wBaYhR0zzS4pFHoM0HgfSgYo+lOH3+ehpoHPFOB+Ye1MRV5z/8AWpTjmkPI6cGj1pALjjigcDvR25NIT2zQAA8UZ6daPx4NGfbmgAOMUZOe1B9+lHU5xxQAUYxR1oOQMUAHtSE5zxS546UnQnqR1oAX1pPek5HSl4596Qw6g10vg+4Gbm2PXIkA/Q1zQ6GrmkXosNXgmJxGTsc+xqJq6NqMuWR6ADhqjkQfaGI4EigEj1FSKoOCDketL0BB6Vys9NMozG/iZvswgdR0VwQfzqhHql+8rJeKLcc4Ma5re25OaZJbJLjcBmmWmRwRLckeVdZ+XO3IJq3/AGcwtQ3nnzMfeI4rNk0xM52c+qkg0i2I4XypdvYbjj+dFgcfM6BLOCK3VppVRUYEs7bc+tQajewz2s9tpipM7OyqV+6qlcZzWZFpfmyKGhJGc/Mc/wA66ewsooYwCqgDsBTJatrc5bTPBcVja+fdHzJD91T3NasdixhMQHzTMqDHYZya2pV86cZ+6o4FSQQgNux06UiWye3QABQPlUYFedfE2/8AO1m3s0bi2iy4z3b/AOtivR3mis7aW4nYLFEpd2PQAV4hq+oPqepz3sgIaeQttJzgdv0xWlNanNWlZFEk59OcUA45pCeeooGa6DhHdc/nQDx70g+lLnPNACj3oPTOOKMknNA469aYhwGaM8YB5pAex6U7HHegQq9zSnnqaaD9aUH260AL1zg96cDz+NNA6/zpeCRimwK2OB0PSgZGO5oJ9vTrSY4pAKTRnI5BpPxoOBQAA5o7Z7+1Lmkz7ZoQBu9fSgH3o460YpgB4xil570hOcccGikAHn6Cjr1oI55/Sjp3oATBzyaQH0pevak5oGLz9aCMjBxzRyO3Wik0M67wzqrXNu1rLkvAOG/vL/8AWroAQwrifCrbdbZc8PC1diMgZFctTc9GjK8EyYHFLuweai3Z608c/jWZuh5bjimmTaeOaaQfypvTGasouQzjI7VqQTAR5zWFGMtWvZRb3HUihktGhCC3PrVtVCjFMjQLjAye1TqmBk1Jm2cf8RmuzokCWwY2+8tcBRngdM+1eXHGcV7brUot4reUgGPzvLkBHBVhivM/Gfhw6BqqmFT9kuv3kX+z6rW1NnLXRzvI5FHcUpBH9aQVucofTFOBxxTetFADscg9TjrSn1pB6UvQelAhc4IzR1PGaQDjrSgf5NMBykk5waVSMe1IB3HUUDIwR2oAdkZ6Y5py9Qfemfe7cZp6sQR0oAq9TyTR0PORQeAODSYGfU0CAnHH50lHSjjPHT0oAd2+lN6GnA88UhHPtTATnv0/KlJxwab2xTjSAAc0HnpSc9qOnPSgA60vBoyfWkPTqDQMOp69OlC8fSjr0pOAfegAP40ucKSFJPAHuaT7o5rU8N2X27xBZRMuYwxlb6Lz/PFTJ2KSuzqNK0WLRtMIkAa+lK+a393vtHtWknPaq+qTlPEHkN/Gu/8ASrEZrklqz0qUbREZMUikqcHpU33qbs7VJYfeFMKtmpFj98VZit9x6iqKUivBCWbmuisohGiqo5NVraxHBLD8q1oY0iXjrQTKVyRFCjJ60u4YqvJPg4zUbXIVck0iDO8VMH0pYgfneePH/fQqTxto/wDafhNpEXdNaHzVHqB1H5VnXMx1DWLSL+AS7sew5rto1WSxYMMqykEevFXAzrbI+eLm32KJI+UPb+7Vbv3zW5JGILmaEj5UkZenoaz7mxKMWjB2ntXRFnHKJTzknH8qdmkPDYPWjoR9KogUn9KUenamn1NLj5hj09aAHdR70Ag8nmgcZ5oH0piF7/hTuhGD+tNzg+2Kd1x6UCFGSMe9OIH5Gm9uP0ozzyO9AysO30pev8qFAx60E880CDpxQDx2pOTQx9KAA+5oOcj1oPWk6dM0AKOe9HFBJ6nPNB69eKAAijNHOAaKADPPWjt17UnIoPWgYZ4PFIDkk96OO9KAWwBjFJsaBRk47Cun8DAf8JMQf+fV8fmK59AFrZ8Jz+V4rs3z8r7oz+IqJM0ijq/FNo0c9nqcYyEzFIfQHoajt5g6jBzXTyW6XNrLbyruRwQRXGiJ9OvXtZCTt5Rj3WudnfSldWNZadjvUEbbhmplqTRj8dKkjkMfOaZkU3NBJrQXXHWrYugEPNYKSEd6la5+XANMVi7Lc5brVK5uiw2qfxqFpCw5qFjigpIs6Kvm6y7f88osfiTXdqu2wb/dNcV4XiMt3dv6uq/pXeOmLcr/ALNXFHNXetjwjWYTDrl2vIDOHH4jmoo/nTa3Poa2vGFsEv4pgOGBUn6GsSD6/nWiMGiC4tAQQVH1qlJa4PDY9iOK2HKnhj+lQGHceM1VybGUYHB4GR7U0gg/MCOK05Y9hRAcN9489vSmbNwwTmncnlM/OAe+aUflVprZD93jNRtauD8o3CncmxCO30pR1yDSEbWwwI+tL1HX8qpBYd2OakiQzSJGOrsFGfU1FyeME57V0/h7w1HeWT6jcX8cLW8ilIMcseoB+tTKVhxjdnJn7uR3ptPYeuKYOv8AKqIAmjnvQfpQTk0ABo78daQk5pRkewoAO3FAPPpQfX19qTHvQMUn/OaQ8EHNAyc0c55pBYTjPrRinY4604Jk44+lK5VhqJu61KExjFKAFGAB9aXGKRSQntU9hKYNRtJs/wCrmVvwzUBGRjrSkExtt4OKllI9qU/PuHQ1heK7E+Sl7GpJi+8B3U9av6NdC80i0uM5LxAn61qCMTxGNgCCO9ZNG0JWZxNrNuVcHrV1X460l9oMtkTLZKZrfOdqHJT/ABFVoZgTtJw3dTwRUWOpSTLwYUE1AG70oYmnYCTJNKDmmAk08UwQp6UQwT31wLe0jLyt+Sj1Jqza6a93F58kqW9sOWkY449qydc8TtBZf2f4dUwRO217kn95Kfb0FCVyJ1LbHVaVf6Hod9HpT6jD9rJy4J+859T0B9q7A8rx0r5dvdq3EyEk7WOWJ5J9c17J8NfEd1Np0Wm6sx85V/cu3Ur2U+9apWOSd27mR4wg3Kw7pI2K5W3Gc46+1d14oi/0mTI48wg1wtmNs7p9R+tCBjipLcjHPSmTjHCEg56irLR8ZwKiaPOCfX0pkledcTMSCcnOaaqZbA61ZaMsc+nrR5QAPrzzTAhMYUdOnvUefSp5E2qM9SOlQEYNArC/I/DAHNQSWCsMxuB7VOAM9uakQgH2ouFiK202VQGZVZyMgbu1b1hbPAY/OCq5PQGr+mwG80m3EMQe4dtij1bpVp7OO1uXgeRJXiIUunQt3x9DxWc5aGsIpNHmUhxj06Z98UzqeOtSzsdqKcKABtA6fX61GORyK6DkExg8/lQRRnB6UZ5HegAH0oGO+KOn1o6HtQAf/rzRkY5o+tOAAHPWpuWkNxg9KkCkfWhRk+/pTuh5pDsJ3pjZLYz0p+MnilRRQMQOSSpXntTznNNK5UGnjnGeKQxD6UJnJGaU0i8Hk80DPQfAd35ujGAnJhcrj0B5FJ8QNel03TotPtJDHPd8yOpwVjHYe5rE8E36WWpXKy5ETReYffB/+vTrkjXLq4k1BD++JOxuqL2x6VFtSkyXwHq1la2xtbm9mhu2csoZ8KR2xXSS67p815NZaiIJZY8Hcg5IPI6V5rqWgXunMXRGurTs6jLKP9of1rPgkUsJIJGjlXkOpwc+9HLcak0epSxW8nz2EhZevluwz+FQK/OMEEdQa46z8R3sDkXCRXMf02sPoRW1b+JrKfC3HmwHszDdj8R1FS42NoTvubYI7VNEokfDcRqN0jdlXvWbBqNrcPshu7dmJxy+B+tT6le2kNotpHeQbG+eeXePmPpUpFykZ13eyXcryTu4hzuWPPyKo6cfSsu4uRHaPeOCN52xjH3V7fnUWr6xaMFtrdmaLrLJtxu9FX61XghvtbUWSD95KwIAHyxKO5NaJWMblTRNNfVtR3spaNW3N/tNnp9PWvRI7RoY1ERKup3Bx13etP0rSbXRbNIIRuKjlu5NWXLvwgxQQwv531G1JlwLgY3f7XvXCwtjVJcdN7fzrsJIHVwQx3A5zXGW7ltTnZuplb+ZpoTNMoC2cVGyhTjjNWVXdyBVW6bEnFMkQjHzY4AzUQy5X3qe5B+x4B+Z8Ln61AvMy7furQBHdYEpX0FVWPOOKmnf96W96gJzz0pgKATjr6cVMq4HWo0XPNWAvB74pMEb/hmdktnjBIKEnIPIzV0RKkiOvQHO2svw8fLFxkdcAflWvI37nKgH3rNq5rFnmBk3DnHSm9v/AK9HJ70nBAFdJxi5B/GlAy2KbxmpUGVyKTdhpCNHwMGmKCOOMjirHXpmmEbWyOOKm5pYaAT/APqpw604KeKUUAJjBAoYn0pwOR2pOo5HBpAJ3+vpQRnHahqMAjGaBj8DNAGPpSjpSEHJFAARg9cmmZAPJp5yOtNxzz1oAuaa/larbMSdpbY30P8A9fFd5DYx3CAMuCO/cV50zFUyD8y/MPqOa9LsLuOe2imTpKgf8xSZSGnT5YeVJZfUdaydU8PWupQsvlRw3P8ABMFwQff2rp1uOOKbLslHzxg/WpuM8kkgktZnt512yxnDD0pQOBkV2firQVurM3tqhFzbjLD++ncfhXGK4YDHQ01qWhSAevOe1II1xjA/KlVflp3fOadhly02urRuiuD04rtdD0wadaiJADK/zSvjkn0+grhbU7Zhg8ZH869Ptu30pMGSJbKB83JqQxgDAFSqMilK1JBQmQKwPpXnVo2+7dh0MjH9TXo13/qpDnopP6V5vpqgspz15pks31+WPOQKzbpi04H5YrSJHl4NZjD9/wDSmhFt1DwbT2FVogESRsdBVlj+7/Wqk5Mdk7E/e4pgUXLMeab0pSaETJBx9BQBYhTPt71cjiBBFR20ecVo+TsQZ79aAIReLaYRuBIQq1rQhlQBm3DIrlNUk3XcMQ52Zfg4x2rpNNmMtuqP1wOtQ0Wjz0kn24oB9TR0FIMV0HMOJqRchR2qLnkYqUEZqWOI5T7k0rLlT9KBz06U49On41JoC5ZRSqvempwSDin+vNAhoXFLj0FL1XPFH0oAbjk8fWhV3celOKk+lIRhvb3oHYcB+lGM8j8aB2Bp3akAwcH3prdeDntT26dabimMVB64/EV13hKQzaWYckm3kKjP908iuSHHPetzwpcmLWGhJO24iwPdl/8ArUmNHcxKMcmpcqOAKihhY9TirGFjGByagZWlznoAPfvXnPiDSjpWqttGLebLRHt7j8K9KkBc89Kpato6arpE9syjzFG+Ju6sOlCKPMlOTgipCvpUOChIdSrA4K9+O1P8wj/lnKR7LWg0WbZCCTXp1muYY29UU/pXlf2+GEFG3hyv3WUg16rp4drK2PBPkpn8hUSBl1RTm6U0bh1U0GVSMd6RBmatL5WnXcn92Fj+lef6WMyRg44Wu18TyiPQLw92AQfiRXG6cuJcf0poTNtx+7GazG+RyRz9a0pD8mKzp2x6c00IlLB4vSqd637uOP3JqeJt425wCarXh2zFcfd6e2aYFfgnpUsSnPSohz1q1boMgEgUAaFlGcjnGDV2fhOp4qO1jAOOfWpL3C2srdAqk0AclJJ52qSkEHaQtdXb/LFEwPIAzXH2GZJQeu98mu1gX92ozxSYJnnmMHrQTn3+lBFJx9K2MRRyc1KmMVEfyqVfuipZUR45NO+pzTAT0yaUdKk0BzsYHnGcGpAcniopB8hPOQKdG29QfagRJz1o/CgYwKX6c0gYYPNIwLAjvTgO/WnYNAIYO3rQT7DrQxw1BJNAwb0zTV49qWjGT7mmK4YBI/xqxa3DWV3BdAj9zIHwPTvUI68ilIBXnvwaBnrCHcoZfusAVPsakCDqaxvC1ybvw7aMW+ZAY2/4CcVtiM461mURkAVJa8zEfQ0GM/hSK4g86U9I42cn6DNAzyXUnEmrXboRsaZyB6cmmRP5bbh2NRFi7lj1Ylvz5pwAxVotFu6hE8K5GSehrv8AwvdNceHrbnLR5jY/SvPopsRbTiux8CXAK31qexEo/HipYPY6lLhl+9zUhMUo5HNMeLIyKgLGMmkQYHjZRBpcaAnEsw4+gJrmNMyX4rR8YXMkt3bRu2QAz4/SqWmIQM0yWac3T3rNnOSeea0Jzjv2rNkk3N6jtVCHW/3se2aq3Lbp2Iq1GwAZh2qkeRQAigkjH6Vo2qVTiTJ7Vr2kQGOB09KALsC7QDiqmvyCHRLlxwSu0fjV9BgCsbxdIV0VIwfmlmA/LNAGHpcf72IYB9K7KPgLXK6Mv+krkcAdK6xeNv8AU0AebkgkdqDnPQ0HGPag88ZrUwAZNTqNuBUK8sMmpuTUs0iLntinemaaMZ7U4DkelSWDYx7d81HE20lPT0qbqOOhqu/yTg+tAiyr5Ap3Xpiolbr6fSpFPHPX3oGOHNObHBBpnboKcBnkAUgEYA9KQNwPenHJpmNrfjTAMZJ7U4Dt2pOBSigQZAHHFKp5+vekJx0oAyKBnS+D74xrdWnIwwlUex4NdhFcsR1rzjRLj7NrlqxOFlbym+hr0aCDacHjFQykWklJ61j+Kb7+z9AvGzhplEK/8CPP6ZraVBjpXI/EWYLa2FuDy7s5/AYH86ENHD456f8A1qeDxTFHHOKevAyMVRZIPT/Jre8IXRg1+JT0mRkP8x/KufDepq9pMoh1ezc8YlAz9eKGB6yjZQVBOoIPFR2s2VwT0NTTYZDipIPPvFrr/bYQf8s4V/Mkmm6cAIxUXiVt3iO76kLtH6VZsBiMHGOKpEMfct19KzmOX4xmrU52qM9aqD5noAe+BAcHGRgVAqFj65qW6IXYg+pFS2kYJDUAS28OF5rSt1OQAKqGWOJSXcLj8KsWlzA/Kl3/AN1Sf16UAXf4iMdK5zxdJuksYeP43P8AKt6IytOzPGqRnAAL5b9K5bxJMJteKA8QxKn4nmgCXRVHmEt3NdIxxtFYOlxiMoxJ7VvSAfKQOvSgDzrp0pAc4/wpTnt2pB0GOTWpiOT74HqamB5wcVDHy1Sgk/jUMuIoHr0p4FMAp+aRYZ96huBlOD0qYYxz+dNkwRj2oENhbeoPrU6nHXFUbdtu5OmDVxTgZ4oYEuML7UmcHPpzQpGD60ueDSGGB1yaDhuufWg5Ixg/nSfhjNADRjv2p2e3TNNbg+1KD+lMBfajODRjIz+VJx2H40AEhbblfvKdy4PQivU9MvF1DT7e7QjEqAn2PcfnXl3btXYeB7zdZ3Fix+aF/MQHurdf1qWNHWvLtBwK888b3RuNbRCf9TCOPcnNehBcjnvXlviaUzeJb9uwk2D6AYpIpGcpJNSKc9+lRg+1PHWrKHkfTPagSGNkcfwuGz9DQMEU2X/Vv9KAPVYAckjvzVwMWAB71S0w+bp9rIf44UJ/IVbYiNGc4wqkn8BUEs8z1STz9avJOzTtj8OK0rXi3HasONzJIHPVmLH8TW3DjYAeO9UQQ3B+bmoUj3OB2zk1NICT7U1cRxySY5FAFSYu93JjACYUE8/561ctrTzD888mPRRiq9nEW+Z8Enn861UJQ4zj2oYD4bO1hIKW6Fv70nzH9avKxAA3YHpVaPn/AOtUgcBhz+FICyuWcD1NcHdSC51m7c9GnIH0HH9K7yHc0qfJhQeprz2Ft19Men75/wD0I00BvWuQmM4xWwkglt0PdTzVC1AC81LaSrFdeUx4figDiSfTrikLY7UpJz6UnbGTWpiOjPU8VInLdKjj4GcZFSpwCR0+lQy4jgT15/xpR05pFxg9KePwpFBnJxTX5zUgxTWwQelAFFj5dxns3FXEaqd0MNkdetWIHDRKQe1AIshuMZGaUd6arZHH4mnAmkMdwB9aTGaX5uckZo6/lQA0qKahx1p5A/yaaRjkdetAhe3B570dKFOetB9+gpjF69qv6BfHTdftZukbt5Un+63/ANes8DJ5yaVuVwuc9jQwR68g3SBT615HqxEmt379mnf+dekaFqgvtFt7kn94E2yezLwa8sLmSR5CSWZ2Y/nUoscvX2qTGB7VGtSA8c1ZQvGKCcq1H50hFIZ6Z4bk8zQLBv8ApiB+XFTa5N5Gh30gPSEgfjxWd4NlD+G7cZ+4zp+tO8XzbPD8qZwZXVB+eT/Ko6kM4e3Qb0HYVsqMJnism3GZx0PrWup+QBTVEkD8E8Uy5IWFIy2NxyfpUzJuYBuM+lQSHzLgvjO0bQaAJLdgPuqSKs5dnBwqj881FbgjrVvuOf0oESRxkgb2Yj0BwP0qwmBjGPwqJCMcZqRewHFICyuCfTHNeb25/fbvVyT+dehynZazH0jY/oa87tFJCHvgVSA6yxdSowM/hU95CcpKmAVINULGU4Az09K2UUSxAGkB52eMDPb0ox0xQTkClzgc81oYip93ipl6DvUK8HAqYVLNEOHXFO5z9aaP8808dCDUjHAY5prjI7jil3cDJpjEepzTEVbnlfpTbGTIK+nSnzjIPXFV7VitxigDUUnsKcv6imIf1p+Oc9D7Uihw5GDyKU5x3H4Ug45/lTsjtz7UwG+/ejkkcdacckZxTQeeTQIYAVJB/OpOcUhXcOKRW7HigYuMmnYAHFJnAFKOOfUUAa/h3Uvskd9Zu2FliaSPPGGA5/OuYhbdEh9RmrkmSuVYg+oqjHlflx04oGmWh04p/tzkVGH9PpT1I49aC0OGAORTh1z2ppH0oB9aCrna+CX/AOJM6f3Lhv1waZ41m/0ayhzjfKzH8B/9eo/BMn+gXSf3Z8/moqp4wl8zV7eIHIihJI/3j/8AWqbGbMi1+afHvWug+XmsqyQGQkjFay5CjPFMkZI/lQySHsDgepqmpJOSSal1OUBYYMnn52H8qgXGOv4UAXoMnnFWQWyPXGKq25OM+nSrMYJcZzSYFleVJP5U9D0qINjIx+tPjyxHHFAC6i+3SbxumIW/lXBW5wE57V2viCQx+Hbxh1KhB+JriF5IHp6VSA6G2BEYYVr2knIz69Kz9FKTWhTA3A85qy++3cE9M9qQHFE/nR26cUE5P86Tr2rQxFB5BqwMZ4quOG/GrAGMD3qWXEVevHNOGevWm96evX6Uiri9ulMcAds/Wn5HX86gkY7sHpQhEUh/+vVN8q+R1q29V5hjk9TTA0beTzYwwxU27H4VR0/iE85ycirfpSKJc9D2pcexP40z8Rj0p3fP8qAF5waUD16470g5x1oz70AOx0yBTWXB3DH0pc4PvRnnpQAmcnjpQABjPIpo4JBxjtTj2PX3oARgCDyc/Wqky7JA2OD1q50BOKrzqWU8dKYDYwDUu3AFQwnjr+tWAMnig0Qq89KDweRzTeV9qcDxnNIo6PwVJh7+PoPkb+Yqjr83neILw9kKp+QFT+EH2X16PWND+tZl4/majeSZ5aZj+uKRnIn09eue5xWsEDHAxgcms7Tk+RcVY1CbybEhWw8p2DP6mgkzZJvtV5JLt4zgfQdKsxqSBx2+lQwAL0PAGKsIc4zk/jQBagBAHOKnRgDnNQRlR7e9RpLuuAB0oAvB/wB5j1qyjYHSqcYJcmrS5GM5PFIDN8VybdEC8fvJkH5c1ya4ro/F0n+h2iZ6ykn8B/8AXrnAMHJqogaelXn2S6GfunArrB5V1EMc55+lcGp5B5rf0bUjGyxucDPehoDms4Hvik7cUHg8UgqzEUcmrPUdh+NVl5YdjmrA9OtSyojlxn2p47HH5io05JxUg71JQrH5aqyHL/1qyQSMA1WkyCc1QEbj/wCvmoZvuHpUrYzmo5cbfegCWzP7kAVcz0HeqFm37sr/ALXWrykEeppDQ9emDxipARkGo1Izg0/P0FAxR1pRngDvSD8MClOM0AOA6ZNIfejdg9etISNo+tIQhGSetAPyntS55PFNLYYEDrTAcBk0yXkHjAIqTkjnFMK8Z6YpjKa5Vyo6VYQ9BxUUw2yAj8alU5HHeguLJOeh6U36UZA64o680FGjoU5h1CbB+/Dx+BqkmWTdnliW/WmW03lXYI7Iw/SmhvLVVIOOmQKRnI3dPX9yD7flVXUpRLfiNeUhXH4nrV21dYbDzHGVRdxFYsLs8gZuWbkmkIuxL9asKABUEYGalzj04/GgCZHAyPao4FP2jI6UmCSRViCMg5PXrQBZLlXVR1xzUm8nnjFQ/KshyRnHQUFvb9aQGP4qbMVmM5Idv5VjKN4ytaniVsx2fQDe38qyYD82B61SAkPynp+VSwybWz/KrAjVsZ71E8O1uPwpgZ/oM8/SjOFpScn2FJyc1ZkOjHzCpgcdqhiH7w/TmpwOc5FQy4gOpzUmeoGaaODgin5GOKQxCcg89fSq0wyTVk9eOM+lRSgEUCKf05pjcg09zg8VGT1piHWpwzD3zV+PFUID+8PvV+Pp7UMaJB/9anZ5/Smg857/AEp341JQ7PPSlBFIB2pw46ZpgHHPP60cHvx2oPPU0me2TQIOfWkZfelA9sUhUHt+dAAjfwmnN+NRMCHyBg+1SK2QMDkUARSJuXFQwvjKk89Ktn9KpzLtkDDoaZSZY+9imlsdaEbK570yQ/Wgu4kHzXAyfujn3q4BuZRzzVa0XlmP0/Krtum+dQO3NIzZc1OTytNSEEZlYKPXA5NUIflYA+lTalJ5l6sX8MK46dzyahXAxQBbR8Ht9akUnJGagj5IBFWUJxSAkRTkZJ6VMuaaM460vA780ASZAcnrnikMnXjH1qLfTWfIzigDI8RtuW0Gc/Mxx+ArNiOHU8c9au68xa4gU9lJqjHirSA0iw2jn9aVD831NVUkyPWnfahEQANznsKQimevHFGc0H0pDwRVGRJEPmOTzipRzUMWSSamHFQzSI9RjnrUgyR14pgIPFL+FACkY71DLgD+VSkegFRSD1z6UwKkg61EwOKmlHrULdMUxDIGxJn2/KtFGBH9KzYv9dV5Wxj0pDRaU5H40oPpj0qNW4pwYA8fjSKJF4PWnhsjGM1Gpwe/NSKSSKADtSgYzxSAAevWjHT/ABoAd6/XvSHA7A/SjBznFBAxjAzQIQgdxTeEYYwQaf1B/nikbJAx/KgQuAR6AVFLGHjIp+Cpwc4pCOvpTKKkTfKMnJp7EAVHwshB6GlY7gADyTQUWbZdkQ4xkZNaNgoQPM3QetUhkJgAHNWZX8uwMfILn9KRJVDtJIzseWOalAJxmoKnjXigCxEBkZP4VbXAAI6+lV4IxkZyatqvfApAL26UjDv0p3A5J7VG7DHr+FADecev0prHB5I46Um449qaxwCc4pgYmsNuvE9o/wCtVUOCCKs6nhrlP92qqkDrVIRMXAGf0pYVwQxOSajQbiCanXHagCA9P6UnTB7elS3UKwyhUcspUNkkdxnFQ9xVGRNDzxipRkn3qGI7VYnGKjN47g+SowO5/wAKhlouLnvkU4HJ+lZwlm3ZLsamWU8DJpDLZJOPT3pjCmq5PU8U7huhpgV5lwM8VVbGfpVuc+v0qrigRHjEoq6uSoqkeJFPpV5MbaYyRSCBnin9xx+FR9xT847mpGhwJz2qVZMHPFQj2P5U8Z9aBkwb0pd2BgfWog3NP3Y7UCHZJPGPSjGeaN31oJPWkFhMkGg9aX6UdBxzTCwmBjBqNW3EqTyPXvUh6Zxiq8oOdwwD60wIblduGPGKSHLyqB9alZhPEcdQOfamaeuZJCeNtAIu9GXjPbFLdNlygzheBz3pYh85c9FqCRtzEjqaQCrzjOauQp06mqsIJbmtGCInHNAyeKPC89D61LgDuaFj9af2HI5pARkZ6DAqFzgHHNTsQvOKgf5lJoAaxbHFQTnC8VMcnqc4qGbJ600Bi35/eIenFVUBLfWrOpDDx/jVePgZP51RNyZccYqUHp0zUCnvUqjcwPemBGcfj1pOpNL169ab1zmgzEcbonUHkjH1qxFCI1A9BimRLk7iOKnA4qWWhnlBuOPrS+Rg8c1KBx/Wl6Z55oGRCIr/AEpQvPOKc0gA6/lTGkzxmgCGYbicGqrcVaOADVeQck0xEMlXoiXjXJ7CqL9QPWrkB42+nagCfGR0pQM0AetOA9qkpDlHcilwM4oA4wc5pcc80DAc9akHApmMHjjJp/BHXFIApe1Jz3oOR+PvTAUdMdDQD9abn07+9KGz1FACjjtUEvANTZB7VHJzkYHTFAmUGJjk3Dv29au2i4hZx/y0JNVLgEKfWtayiAjXn5UUZPvTEP8AKCxBDyep+tVXGHwK1NoMJOM596z2TfJkCkUPtYy2MKa1Yo8AHtUFsgRcnrVjdzSAkzj0o38VGWGeaQnjigCN2LEj3pSm2EknnNPVMnPb1p8i4XHvQBCU2+tVJyN2KtynbntVJV3yEY6imgMrVl+aAAYJzmqjfKcDj6Vq6vF8kD+j4/SsyQZbiqRLBevFTrxj61Cq7SD1NSBjkZoAYTk/hSHPQc0HPenRj5s8YHtQyETxrsUCngA98H6U3GcH+VOHPNSWBO0cVGSx61LwBScdOtAERU96TaealJHvimsQAS2FpgR7D6YqCcYIzT5bxV4XJPSqjSs5yxoENbqCfXNTxPi4yDxiq5Ynj+VTQA4+tDA0gTjIpQc1HCcrjnNScDpSKHdMcU78KQEdKeMHkc5oAbjvyPenAke9NB64p2aBhkjikJ+bJ5/CgdeelKe3A+lAAowOcZoI/GndQfSlJ+lAiPZkDApCM561K3TnFNGM44oAqTLu46jvXp/hXS9O07w5FdXK+ZqF6SIVC7jnHAArz2FBJdQIeA7hf1rs/DrRGCKG9cxT2uflLAFsfdYZIHT8qTY0c/rKvBKD5SRs7OroBhVdTzj9DVSFWKbnJLZ9MVc1m5W4uI445RMIy7u46F2OTj1xwKYkY8sHHPpQA0ORxUituB4qI4B4xmhW9KAJgcH0p6jP0FRAkng49qlTlTn60ATLgLgCoJJck4yakJ9OtRbPnoAryFpKsW0OFyQTQsI3MMdDmr0UXyfdGcdaAMXWIM2EjdNrBufrWEyZYGutv4PNsZ07shrlBzg+oq0Sw2kAUoU7ulHYE9CelOHBHTFMLkTcYNSRng81EelOjAbrSZKLCsOc/wA6epB9OPeoBEpPSneQmPuD86komIPoaaSF5JqsYI88P/48aQw8/LK2PTdxTFcnkl2plVyewqm6u5y7ZNOaGZej7vwph84EZI4oAQwhRUbAZqYbj14NNmQ7MnFMCJejcVYhAC+9QQrkmraqCPxxQMehKnnmrAGfaoQBxnrUsR4/+tSGKOOfTtSqx6YxTsUbfpSCwA4UdKUsKQjPegD8qQDg4waAwOc03B6fjS7cZ/KgY7OMn+VKCGwaTbgAGk59uaYhxPFANGOc96Xj6+tADQ+y6tzn/lqn8xXQaxGofOwHOckj3rlLuXBDD+Eg/ka7C9HnAMOQwDA/UUhmEWwQBwAcYq1E2QBVaWMq3tTomx3oAtMoJ9BSbAopysMDtUgAK8UAQgYHp71ZjHy5OeRUZ7g05WIFAC554I5FMJVTg0mTwBnim4O7npQBYVSLrHqgIq9GuFqowCmBweTlSa0Y1wo/nQBAYd3B5yDXDMuxiuOVYj8q9BCndyeBXEapH5Op3C4wPMJ/PmnEllU8AU4delJ2pQOa0JIOv5VJCOvPSoz0qWLoTUsETKo5xz9aRog555py07HT9am5REII/Tiomtk47e9WenBqM9c/0piK/ksv3JGHtRvmX+LP1qZh8vFR4znigCIzHHKkHvUUshYYNTSjAxVSTGaYE8IKrz1qzimIuQB2qUDAFIaFAP51Kg5yOKaq96lUY4pFDh7UYyetKDnGacOR1zx60AJjPHNO257dKApGKOKQC4x1+lIPWlJ4+tNzQICemTnP60DtwM0cY9vWlwD27Uxi+x601mwP1pR1GelRScHjtQIqXALg9ea6ywm+0abaued0Q/Mcf0rlXBJrf8PSbtNVOpilZf6ihiC8QhiMcYqgr+p/Ktm8QsNxAH0rIePa3HODQUTJIOKsxvkf0qgvQcfnVmN8ADj8KQFljk+30xT0HYCmBhjgZ+tPRietADmT86YAMg9am2cinxwYYZGBQA+Qf6MG/ukGtCMYQdzVYIPLdAMkirkanYCcDigBjDr71yHiSHy9VVh0eNT+OSK7M844rmfFSA/ZiPvAkH6GnETOdxg/rTl6+1JwacB2FaEFfn8MdakgPBxzzUZz0qWHp369algiZQfU/Sn8YxzTVJ+nvTsY/wAagoQ4IHb6U05xgnOad0FMPr/SmA1m6jPOaj/H9KVjTCePT60xEc5+XnpVXG5wPerEzdqhh5kPHQf1pgXo1yMmpRk81GnTg1MPUUhocM9ugpw5HSkAGB0zTl9/WkULg4PFPUZ7U3jA460L1PH60AP6HmjPJyTzTc896Un/AOvQAu7jHNJk9cfWlzzyaQdKBMUdOKTP6UpzmjtQIQtxVdyc+1Suxz9aiYjdnH6UARke9bHhxji7j9Cr4/SsojOMZzV/w+5TUZFx9+I8e4OabGbsqllwBmsqeJg5ya13LED3rOuVz8wI5NSMoHg9eR2p0ci0yQc9OnamI2CBnimBpxsccCpEOKrQttA5/OrSjAzgCkBZXc68DH4VYhQMfcA1XhJPfjFWLT/XckY5OfwoAtRqMLgYqVOVHOaqm6CKFhjaRz68AD61EIZ7oKJ3GzP+rj4H/wBegCWS/USeXbKZ5O+Puj6mqOqaYZ9OuHkO6YASDHbHb6YrWhtkiXaqhQO1OlA2FcfKRg0CPOF5UGnAnIxTp4TbXU0B6xuy/hnimDkitSCDqRjrUsWcDNRZz0NTRH5PxqWCJVp4H0601e2V/KnqQMVBQZz0/LFRNjnmpGOOME1G3PUVQELnv7U09PSpGHrUWc0CK8p5PtSQDk9zmkkbJyPwqW2GVHXmgCwjdCcj61MrbuhHAzioxyKl8sHqAaRSHZP93j+dODAcEYpnlgAkZH0NOEbAcOw9jg0DHhwB2pysDkiotjjglT77aXBXqP1oESjnjNLj06VEzYGTkc4p6gk9aQxxGetJgEdqCOe1A+WmJjuucUjHjr+NBPHGRTCfl470CGN14pu3mnEY9PfmmMQNxOOO9MBcZyDVjSXCazbZJwxKkeuRRHp1/NEZI7SZkxnpz+XWqMExjvYpCpUxygkHjHNK4ztNp4OMVSuUwp/pV7PLcjAOBiqd5KikjOTjkA0hmTKRuI9DUI4PSpJSWfuoPPNRjgfrTEW4WwADV1GBHGazUbHTj6VdhcbODk0DL8OAeas24yzjoSpH04qrDlsdquQqPMU+9IBYtst/PEU2tEsRHuNv8qvxoEXAAAqlIPK8RwkdLm0ZfxQ5/rV9VIHJoAXjFRyLwamB9KjkPHvQBxPiKDytU3jpKm/8Rwayh/niug8WBRPaDq2H/LisAckVaIZXzkYzk1NH/qzzUIz1NTRj5APXtSYkTJ64p449aYoPGOBTyAfrikUIcmoyOakIJ/8A10xuOvrQIjYccd6iYeuDUpJAqFznrTAqspOcZ5qe1BEa5+lQyHvVqJcKoPpQwJ14z9akHp1poFOHTg/hSKQ459OacPrzSHGetOABPWgYDgnHBFBAHIGe3NOFIMjkfzoAinHyIOc7xUw+XpzUNz0jx3cVKeec9aCRw6dKUYBpOQP/AK1AP0oACePwqNmxkYpzNx29MVGzUIABxhe1SWfN8hKbwgL7euSB6e3WoQR3/SnBpI5RJExWRDlT6Ux3Ov8Atk1veQwQQPLA4Du6jJC+h9845zXM+KolXVPMjwC6nfgdWU9f1/Srz+IpGt1jaF1ZR0jcbT9CeRWNdSyXUplkxnG0KDnAqRnWWQE9tG7HAkjB3Z9V61CmnJBbAsWkkHVmOfypNDkEmkWxbAKAp+Rq9L80R9M0Ac/eJ859KrMB+nNaU8WWJ6VnSL82OaaAIzggcDtVpHwBz+lU1+8e5qdG4wR+tAGpprGQDP61shQuMYxisDTJSr89M4rooxuSkBT1FtmsaI+eGkkjz9VrTPJrK1qJmt7K4QFvst0kjY7L0JrWJG4leVPIPrQAZpjHk96U+vWkIJGDxQBzPiiPdbwTZ5jlKH6MP/rVzQGSK7XWoVm0m7XALbQwz6g5rigcgY5q4kshyP8AIqdR8o5qDG7HGc9KsBTQyUSrz60tIFbB44pcHHOTUlCHHrimHGSSaeVOM1E425Hc0CGOQuRkGoXJ2nI4qURljntUdyuxcdqYFNzlhj1q/Hwgzx+tUol3yjPQZrQQcAUMBysp6HpUg69QaQZ6Hn604Jx2pFIXdzT1PTn8TUfl8fePpRtf1z9aAJQeetB+tRZcE5H40ebgcg0BcS5ztTjHzjvU+PTGah2tLg4wAe/rU6rxnNAhOSMU0kkmpcZHSmMOeRigZEzDHpTT0pxHIGKFUE4weaBCAZ6VIAO5oCfL0HPalC5PQ8UxiEjvUZwOgFS7c8EdaQr3xQM2PDzA6bKBj93MR+YzWtgNGQDXP+GpGa41GDA+Uq/9K30JXGcmpApXERyef0rLnT5uK6CWJmRsDArJuocZ5JoAzgoyc9aevykU7Yd3QUrKw/AUxE1m+yQj3rpbOQFeW61y0IJlDZPIrdsnK7RikxmuvsAfrR0wOg7AUsQLKOOvNO8sg9OaAG/QUpGBnvTxG3pSFGweKAKW1XBVv4sqfxrz0Jsd0bqjlT+Br0N42AY4+6c1xmt2/wBn1y7QdDJv/MZqoks//9k=" alt="Portrait of Jorn van Schagen">
+          </div>
+        </figure>
+        <div class="profile-card">
+          <p class="profile-card__label">Current focus</p>
+          <h2>Supply chain, data, and operational improvement</h2>
+          <ul class="profile-card__list">
+            <li>Supply chain flow, planning, and material handling</li>
+            <li>Data analysis for inventory, routing, and network performance</li>
+            <li>Process redesign grounded in measurable operational patterns</li>
+            <li>Operational tools that turn supply chain data into clear action across planning and control</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+
+    <section class="summary-band">
+      <article class="summary-card">
+        <p class="summary-card__label">Education</p>
+        <strong>HAN Arnhem</strong>
+        <span>International Business</span>
+      </article>
+      <article class="summary-card">
+        <p class="summary-card__label">Specialisation</p>
+        <strong>Supply Chain Management</strong>
+        <span>Operations, flow, and improvement</span>
+      </article>
+      <article class="summary-card">
+        <p class="summary-card__label">Approach</p>
+        <strong>Logic before hype</strong>
+        <span>Systems thinking guided by business value</span>
+      </article>
+      <article class="summary-card">
+        <p class="summary-card__label">Toolkit</p>
+        <strong>Python, SQL, BI, process mining, and operational prototyping</strong>
+        <span>Python with Pandas and NumPy for auditing and automation, SQL for ERP tracing, process mining for slotting
+          and route scenarios, and dashboards for operational analysis</span>
+      </article>
+    </section>
+
+    <section class="case-jump" id="cases">
+      <div class="case-jump__intro">
+        <p class="eyebrow">Quick access</p>
+        <h2>Jump straight to a case</h2>
+      </div>
+      <div class="case-jump__links" aria-label="Case shortcuts">
+        <a class="case-jump__link" href="#case-01"><span>01</span><strong>Intralogistics</strong></a>
+        <a class="case-jump__link" href="#case-02"><span>02</span><strong>Reverse Logistics</strong></a>
+        <a class="case-jump__link" href="#case-03"><span>03</span><strong>Digital Twin</strong></a>
+        <a class="case-jump__link" href="#case-04"><span>04</span><strong>WMS Checker</strong></a>
+        <a class="case-jump__link" href="#case-05"><span>05</span><strong>AI Chat Assistant</strong></a>
+        <a class="case-jump__link" href="#case-06"><span>06</span><strong>Cycle Counting</strong></a>
+      </div>
+    </section>
+
+    <section class="strengths" id="strengths">
+      <div class="section-heading">
+        <p class="eyebrow">Strengths</p>
+        <h2>What I bring to logistics and supply chain teams</h2>
+      </div>
+
+      <div class="strength-grid">
+        <article class="strength-card">
+          <h3>Operations understanding</h3>
+          <p>
+            I focus on how material, time, and people move through a system, then identify where waste,
+            delay, or unnecessary cost is created.
+          </p>
+        </article>
+        <article class="strength-card">
+          <h3>Data-supported decision making</h3>
+          <p>
+            I use data and structured analysis to identify patterns, test assumptions, and back up
+            recommendations, whether the problem is slotting, returns, bottlenecks, inventory accuracy,
+            or internal transport frequency.
+          </p>
+        </article>
+        <article class="strength-card">
+          <h3>Operational translation</h3>
+          <p>
+            I translate operational and analytical findings into dashboards, maps, and interactive tools so
+            decision makers can act on supply chain performance data more quickly across planning, logistics, and
+            control.
+          </p>
+        </article>
+        <article class="strength-card">
+          <h3>Digital tool awareness</h3>
+          <p>
+            I use Python for logistics auditing and automation, SQL for tracing ERP and transaction logic,
+            process mining to simulate slotting methods and picking routes, dashboard tools to analyse
+            performance, and web-based interfaces when supply chain decisions need to be made faster and with
+            better operational context.
+          </p>
+        </article>
+      </div>
+
+      <div class="focus-panel">
+        <div>
+          <p class="eyebrow">Professional focus</p>
+          <h3>Logistics, supply chain management, and data science</h3>
+        </div>
+        <div class="focus-tags" aria-label="Focus areas">
+          <span>Supply chain planning</span>
+          <span>Inventory optimization</span>
+          <span>Transport performance</span>
+          <span>Scenario thinking</span>
+          <span>Process integrity</span>
+          <span>Process mining</span>
+          <span>Decision support</span>
+          <span>Operational dashboards</span>
+          <span>Network and supplier analysis</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="work" id="work">
+      <div class="section-heading">
+        <p class="eyebrow">Selected work</p>
+        <h2>Case studies and operational prototypes</h2>
+      </div>
+
+      <section class="case-study" data-case id="case-01">
+        <div class="case-study__heading">
+          <div>
+            <p class="case-study__meta">Case 01 / Company details anonymised</p>
+            <h3>Intralogistics Flow Optimization &amp; Material Handling Transformation</h3>
+            <p class="case-study__detail"><strong>Period:</strong> 2022 project phase | <strong>My
+                contribution:</strong> Individual ownership of flow analysis, AGV vs tugger evaluation, and milk run
+              design logic.</p>
+          </div>
+          <p class="case-study__summary">
+            Functional intralogistics redesign for high-frequency internal transport, built around lower investment
+            intensity and better flow logic than the AGV alternative.
+          </p>
+        </div>
+
+        <div class="case-study__layout">
+          <div class="case-study__copy">
+            <div class="case-tabs" role="tablist" aria-label="Intralogistics case details">
+              <button class="case-tab is-active" type="button" data-target="challenge">Challenge</button>
+              <button class="case-tab" type="button" data-target="decision">Decision</button>
+              <button class="case-tab" type="button" data-target="impact">Impact</button>
+            </div>
+
+            <article class="case-panel is-active" data-panel="challenge">
+              <h4>The challenge</h4>
+              <p>
+                The question was whether automated guided vehicles were the right answer for repetitive,
+                high-frequency internal movement. The environment was busy, dense, and sensitive to route
+                design, so a technology-led answer risked solving the wrong problem.
+              </p>
+              <ul>
+                <li>High flow intensity across multiple internal zones</li>
+                <li>Need for reliable replenishment rhythm rather than isolated trips</li>
+                <li>Pressure to choose a scalable system without overinvesting</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="decision">
+              <h4>The decision logic</h4>
+              <p>
+                I argued for a tugger train milk run system instead of AGVs. The key was synchronised route
+                design: one train, multiple deliveries, timed loops, and service frequency weighted by ABC
+                demand levels so high-movement zones received more frequent stops.
+              </p>
+              <ul>
+                <li>Lean Six Sigma framing instead of technology hype</li>
+                <li>ABC weighting used to determine route frequency and stop priority</li>
+                <li>Focus on process integrity, repeatability, and throughput</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="impact">
+              <h4>The business result</h4>
+              <p>
+                The proposal showed that a simpler, more synchronised transport logic could reduce projected
+                equipment investment versus the AGV alternative while maintaining strong flow performance. It also
+                reduced waste by
+                consolidating shipments into planned train runs and leveling workload more effectively.
+              </p>
+              <ul>
+                <li>Lower projected equipment investment than the AGV proposal</li>
+                <li>Stronger workload leveling through timed milk runs</li>
+                <li>High-frequency zones served through ABC-weighted route logic</li>
+                <li>Clear demonstration that smart flow can outperform expensive automation</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="case-study__visual">
+            <div class="visual-panel is-active" data-panel="challenge">
+              <div class="comparison-board">
+                <div class="comparison-board__column">
+                  <p class="comparison-board__label">AGV route logic</p>
+                  <div class="vehicle-card">single load</div>
+                  <div class="route-line route-line--single"></div>
+                  <div class="comparison-note">Higher investment and more rigid route logic</div>
+                </div>
+                <div class="comparison-board__column">
+                  <p class="comparison-board__label">Tugger train logic</p>
+                  <div class="vehicle-card vehicle-card--train">multi-stop train</div>
+                  <div class="route-line route-line--train"></div>
+                  <div class="comparison-note">Consolidated runs built for frequent internal flow</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="decision">
+              <div class="route-board">
+                <div class="route-board__header">
+                  <span>Milk run cycle</span>
+                  <span>ABC weighted frequency</span>
+                </div>
+                <div class="route-board__rows">
+                  <div class="route-board__row">
+                    <strong>A zones</strong>
+                    <div class="dots dots--dense"></div>
+                    <span>highest stop frequency</span>
+                  </div>
+                  <div class="route-board__row">
+                    <strong>B zones</strong>
+                    <div class="dots dots--medium"></div>
+                    <span>planned recurring service</span>
+                  </div>
+                  <div class="route-board__row">
+                    <strong>C zones</strong>
+                    <div class="dots dots--light"></div>
+                    <span>lower intensity coverage</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="impact">
+              <div class="impact-grid">
+                <article>
+                  <span>Cost logic</span>
+                  <strong>CapEx reduced versus AGV route</strong>
+                </article>
+                <article>
+                  <span>Lean effect</span>
+                  <strong>Less transport waste</strong>
+                </article>
+                <article>
+                  <span>Flow result</span>
+                  <strong>ABC weighted milk runs</strong>
+                </article>
+                <article>
+                  <span>Strategic insight</span>
+                  <strong>Process over hype</strong>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-canvas">
+          <div class="canvas-head">
+            <p class="case-study__meta">Visual support</p>
+            <h4>Timed transport rhythm and weighted zone service</h4>
+          </div>
+          <div class="milk-run-board">
+            <div class="milk-run-board__timeline">
+              <div class="milk-run-board__slot"><strong>08:00</strong><span>A zones + line feed</span></div>
+              <div class="milk-run-board__slot"><strong>08:20</strong><span>A + B replenishment</span></div>
+              <div class="milk-run-board__slot"><strong>08:40</strong><span>A zones repeat stop</span></div>
+              <div class="milk-run-board__slot"><strong>09:00</strong><span>B + C sweep</span></div>
+            </div>
+            <div class="milk-run-board__service">
+              <article><span>A movers</span><strong>highest frequency</strong></article>
+              <article><span>B movers</span><strong>planned recurring stops</strong></article>
+              <article><span>C movers</span><strong>lower intensity coverage</strong></article>
+            </div>
+            <div class="milk-run-board__comparison">
+              <div class="milk-run-board__lane">
+                <span>AGV logic</span>
+                <div class="milk-run-board__bar milk-run-board__bar--short"></div>
+                <p>Single load movement with higher investment intensity.</p>
+              </div>
+              <div class="milk-run-board__lane">
+                <span>Tugger train logic</span>
+                <div class="milk-run-board__bar milk-run-board__bar--long"></div>
+                <p>Consolidated multi-stop loops with leveled transport work.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="case-study" data-case id="case-02">
+        <div class="case-study__heading">
+          <div>
+            <p class="case-study__meta">Case 02 / Reverse logistics prototype</p>
+            <h3>Camera-Assisted Detection for Reverse Logistics Decisions</h3>
+            <p class="case-study__detail"><strong>Period:</strong> 2024 project sprint | <strong>My
+                contribution:</strong> Individual design and build of the reverse-logistics decision prototype and
+              dashboard logic.</p>
+          </div>
+          <p class="case-study__summary">
+            Functional reverse-logistics prototype using camera-assisted inspection to improve return classification and
+            downstream handling.
+          </p>
+        </div>
+
+        <div class="case-study__layout">
+          <div class="case-study__copy">
+            <div class="case-tabs" role="tablist" aria-label="Reverse logistics case details">
+              <button class="case-tab is-active" type="button" data-target="intake">Intake</button>
+              <button class="case-tab" type="button" data-target="inspection">Inspection</button>
+              <button class="case-tab" type="button" data-target="routing">Routing</button>
+            </div>
+
+            <article class="case-panel is-active" data-panel="intake">
+              <h4>The intake design</h4>
+              <p>
+                Returns often slow down because intake quality is inconsistent. This prototype focuses on
+                creating a structured intake point where products are captured, assessed, and prepared for
+                a clearer next-step decision.
+              </p>
+              <ul>
+                <li>Designed around reverse logistics rather than standard outbound flow</li>
+                <li>Visual consistency at intake to support faster triage</li>
+                <li>Improves decision quality before items enter the wrong stream</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="inspection">
+              <h4>The inspection layer</h4>
+              <p>
+                The prototype uses camera-supported detection to flag packaging damage, visible defects, and
+                confidence levels. The purpose is not to remove human judgement, but to support faster and
+                more consistent first-line assessment.
+              </p>
+              <ul>
+                <li>Condition signals made visible in one inspection view</li>
+                <li>Supports prioritisation and consistency in return handling</li>
+                <li>Combines operational practicality with digital decision support</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="routing">
+              <h4>The decision outcome</h4>
+              <p>
+                Once scored, returns can be routed toward resale, refurbish, further inspection, or recycle.
+                The value of the prototype lies in separating high-potential items earlier and reducing delay
+                in the overall reverse flow.
+              </p>
+              <ul>
+                <li>Faster separation of value-recovery opportunities</li>
+                <li>More structured reverse logistics process design</li>
+                <li>Clearer handoff between inspection and disposition</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="case-study__visual">
+            <div class="visual-panel is-active" data-panel="intake">
+              <div class="inspection-stage">
+                <div class="inspection-lane">
+                  <span>return arrives</span>
+                  <span>capture zone</span>
+                  <span>condition check</span>
+                </div>
+                <div class="inspection-boxes">
+                  <div class="inspection-box">consumer return</div>
+                  <div class="inspection-box">transit damage</div>
+                  <div class="inspection-box">packaging issue</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="inspection">
+              <div class="camera-frame">
+                <div class="camera-frame__view">
+                  <div class="camera-frame__tag">object detected</div>
+                  <div class="camera-frame__grid"></div>
+                </div>
+                <div class="camera-readout">
+                  <div><span>Packaging damage</span><strong>medium</strong></div>
+                  <div><span>Product damage</span><strong>low</strong></div>
+                  <div><span>Confidence</span><strong>82%</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="routing">
+              <div class="decision-flow">
+                <div class="decision-flow__node">resale</div>
+                <div class="decision-flow__node">refurbish</div>
+                <div class="decision-flow__node">manual review</div>
+                <div class="decision-flow__node">recycle</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-canvas">
+          <div class="canvas-head">
+            <p class="case-study__meta">Actual app structure</p>
+            <h4>ReturnFlow NL overview dashboard recreated from the project interface</h4>
+          </div>
+          <div class="returnflow-app">
+            <aside class="returnflow-app__sidebar">
+              <div class="returnflow-app__brand">
+                <strong>ReturnFlow PRO</strong>
+                <span>Intelligent Logistics Platform</span>
+              </div>
+              <div class="returnflow-app__menu">
+                <div class="returnflow-app__item returnflow-app__item--active">Dashboard</div>
+                <div class="returnflow-app__item">Network Map</div>
+                <div class="returnflow-app__item">Disposition Workbench</div>
+              </div>
+              <div class="returnflow-app__strategy">
+                <span>Decision Strategy</span>
+                <strong>Weighted Scoring</strong>
+              </div>
+            </aside>
+
+            <div class="returnflow-app__main">
+              <div class="returnflow-app__header">
+                <div>
+                  <strong>Overview</strong>
+                  <span>Real-time logistics performance metrics</span>
+                </div>
+                <span class="returnflow-app__toggle">Training Mode</span>
+              </div>
+
+              <div class="returnflow-app__kpis">
+                <article><span>Avg SLA Risk</span><strong>42.0%</strong><em>Click for breakdown</em></article>
+                <article><span>Recovery Rate</span><strong>68.0%</strong><em>View financials</em></article>
+                <article><span>Lean Waste Score</span><strong>31/100</strong><em>Identify sources</em></article>
+                <article><span>Potential Value</span><strong>EUR 12.8k</strong><em>Top assets</em></article>
+              </div>
+
+              <div class="returnflow-app__grid">
+                <section class="returnflow-app__card">
+                  <p class="returnflow-app__label">Lean Waste Spotlight (Muda)</p>
+                  <div class="returnflow-app__metric">
+                    <div><strong>Waiting (Backlog)</strong><span>42%</span></div>
+                    <div class="returnflow-app__bar"><span style="width:42%"></span></div>
+                  </div>
+                  <div class="returnflow-app__metric">
+                    <div><strong>Transport (Empty KM)</strong><span>45%</span></div>
+                    <div class="returnflow-app__bar"><span style="width:45%"></span></div>
+                  </div>
+                  <div class="returnflow-app__metric">
+                    <div><strong>Defects (Damage)</strong><span>25%</span></div>
+                    <div class="returnflow-app__bar"><span style="width:25%"></span></div>
+                  </div>
+                </section>
+
+                <section class="returnflow-app__card">
+                  <p class="returnflow-app__label">Operational Alerts</p>
+                  <div class="returnflow-app__alert returnflow-app__alert--warn">Severe weather in Randstad: plus 24h
+                    TAT risk</div>
+                  <div class="returnflow-app__alert returnflow-app__alert--flag">Amsterdam hub nearing congestion
+                    capacity</div>
+                  <div class="returnflow-app__alert returnflow-app__alert--ok">Eindhoven refurbishment line at peak
+                    efficiency</div>
+                </section>
+
+                <section class="returnflow-app__card">
+                  <p class="returnflow-app__label">Recent Throughput</p>
+                  <div class="returnflow-app__chart">
+                    <span style="height:65%"></span>
+                    <span style="height:78%"></span>
+                    <span style="height:45%"></span>
+                    <span style="height:89%"></span>
+                    <span style="height:92%"></span>
+                    <span style="height:56%"></span>
+                    <span style="height:74%"></span>
+                  </div>
+                  <div class="returnflow-app__days">
+                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                  </div>
+                </section>
+
+                <section class="returnflow-app__card">
+                  <p class="returnflow-app__label">Top Value Opportunities</p>
+                  <div class="returnflow-app__list">
+                    <div><strong>RF-219 / Electronics</strong><span>Est. profit EUR 940</span></div>
+                    <div><strong>RF-208 / Small appliance</strong><span>Est. profit EUR 810</span></div>
+                    <div><strong>RF-204 / Audio device</strong><span>Est. profit EUR 760</span></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="case-study" data-case id="case-03">
+        <div class="case-study__heading">
+          <div>
+            <p class="case-study__meta">Case 03 / Site details simplified</p>
+            <h3>Warehouse Digital Twin for Route Visibility and Slotting Scenarios</h3>
+            <p class="case-study__detail"><strong>Period:</strong> June 2025 | <strong>My contribution:</strong>
+              Individual build of the digital twin workflow, scenario framing, and stakeholder walkthrough setup.</p>
+          </div>
+          <p class="case-study__summary">
+            Interactive routing prototype designed to visualize congestion, slotting scenarios, and stakeholder
+            walkthroughs inside a functional warehouse environment.
+          </p>
+        </div>
+
+        <div class="case-study__layout">
+          <div class="case-study__copy">
+            <div class="case-tabs" role="tablist" aria-label="Warehouse case details">
+              <button class="case-tab is-active" type="button" data-target="visibility">Visibility</button>
+              <button class="case-tab" type="button" data-target="analysis">Analysis</button>
+              <button class="case-tab" type="button" data-target="use">Use in practice</button>
+            </div>
+
+            <article class="case-panel is-active" data-panel="visibility">
+              <h4>The operational tool</h4>
+              <p>
+                Warehouse decisions often stay hidden in tables. This project translated them into a visual
+                environment where routes, locations, and bottlenecks could be understood spatially.
+              </p>
+              <ul>
+                <li>Route visibility across a warehouse layout</li>
+                <li>More intuitive understanding of picking movement</li>
+                <li>Useful for explaining scenario differences to stakeholders</li>
+                <li>Interactive POV mode so users can walk the floor virtually</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="analysis">
+              <h4>The analysis logic</h4>
+              <p>
+                The prototype was supported by data work around slotting, congestion, and process patterns so
+                the interface was not just visual, but tied to operational logic and measurable outcomes.
+              </p>
+              <ul>
+                <li>Scenario comparison for different slotting approaches</li>
+                <li>Support for KPI-oriented performance review</li>
+                <li>Stronger bridge between analysis and communication</li>
+                <li>Roughly 4,500 lines across the main prototype files, including a custom-coded 3D warehouse
+                  environment</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="use">
+              <h4>Why it matters</h4>
+              <p>
+                The real value was making warehouse design conversations easier. A digital twin style tool
+                helps teams discuss trade-offs faster, especially when routes, density, and flow complexity
+                are hard to explain in static spreadsheets alone.
+              </p>
+              <ul>
+                <li>Better discussion around layout and movement</li>
+                <li>More accessible communication of technical analysis</li>
+                <li>Clearer operational storytelling for decision makers</li>
+                <li>WASD-enabled warehouse POV for immersive stakeholder review</li>
+                <li>Well suited for live walkthroughs or short stakeholder screen recordings</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="case-study__visual">
+            <div class="visual-panel is-active" data-panel="visibility">
+              <div class="warehouse-map">
+                <div class="warehouse-map__grid">
+                  <span class="aisle">A1</span>
+                  <span class="aisle">A2</span>
+                  <span class="aisle">B1</span>
+                  <span class="aisle">B2</span>
+                  <span class="aisle is-highlight">C1</span>
+                  <span class="aisle">C2</span>
+                  <span class="aisle">D1</span>
+                  <span class="aisle">D2</span>
+                </div>
+                <div class="warehouse-map__route">active route path</div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="analysis">
+              <div class="metric-dashboard">
+                <article><span>Travel distance</span><strong>down</strong></article>
+                <article><span>Congestion risk</span><strong>mapped</strong></article>
+                <article><span>Slotting scenarios</span><strong>compared</strong></article>
+                <article><span>Discussion quality</span><strong>up</strong></article>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="use">
+              <div class="review-board">
+                <div class="review-board__row"><span>WASD controls</span><strong>floor walk</strong></div>
+                <div class="review-board__row"><span>single picking</span><strong>baseline</strong></div>
+                <div class="review-board__row"><span>batch picking</span><strong>compare</strong></div>
+                <div class="review-board__row"><span>ABC slotting</span><strong>review</strong></div>
+                <div class="review-board__row"><span>flow bottlenecks</span><strong>discuss</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prototype-embed">
+          <div class="prototype-embed__header">
+            <div>
+              <p class="case-study__meta">Case 03 live warehouse visual</p>
+              <h4>Operate the digital twin directly inside this case study</h4>
+            </div>
+            <p class="prototype-embed__note">
+              This live view is part of the warehouse digital twin case. Scroll stays smooth by default,
+              and you can activate the scene whenever you want to inspect the model more closely.
+            </p>
+          </div>
+          <div class="prototype-embed__controls">
+            <button class="prototype-toggle" type="button" data-warehouse-toggle aria-pressed="false">
+              Activate live warehouse
+            </button>
+            <span class="prototype-embed__hint">When inactive, the portfolio keeps normal page scrolling.</span>
+          </div>
+          <div class="prototype-embed__frame" data-warehouse-frame>
+            <div class="prototype-embed__viewer prototype-embed__viewer--mock" role="img"
+              aria-label="Warehouse digital twin snapshot">
+              <div class="warehouse-mini">
+                <div class="warehouse-mini__aisles">
+                  <span>A01</span>
+                  <span>A02</span>
+                  <span>A03</span>
+                  <span>A04</span>
+                  <span>B01</span>
+                  <span class="is-hot">B02</span>
+                  <span>B03</span>
+                  <span>B04</span>
+                  <span>C01</span>
+                  <span>C02</span>
+                  <span>C03</span>
+                  <span>C04</span>
+                </div>
+                <div class="warehouse-mini__route">
+                  <div class="warehouse-mini__line"></div>
+                  <div class="warehouse-mini__stops">
+                    <span>Dock</span>
+                    <span>Fast-pick</span>
+                    <span>Outbound</span>
+                  </div>
+                </div>
+                <div class="warehouse-mini__hint">Interactive snapshot: route and ABC slotting focus.</div>
+              </div>
+            </div>
+            <div class="prototype-embed__overlay" data-warehouse-overlay>
+              <div class="prototype-embed__overlay-card">
+                <strong>Warehouse visual ready</strong>
+                <p>Activate interaction when you want to inspect the live model.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="case-study" data-case id="case-04">
+        <div class="case-study__heading">
+          <div>
+            <p class="case-study__meta">Case 04 / WMS data checking tool</p>
+            <h3>WMS Table Scraper and Leakage Checker</h3>
+            <p class="case-study__detail"><strong>Period:</strong> 2025 internal tooling phase | <strong>My
+                contribution:</strong> Individual development of the WMS scrape, Excel comparison, and mismatch
+              detection flow.</p>
+          </div>
+          <p class="case-study__summary">
+            A small internal tool that scraped WMS tables, compared them with Excel exports, and surfaced
+            mismatches where the WMS showed errors but the ERP did not.
+          </p>
+        </div>
+
+        <div class="case-study__layout">
+          <div class="case-study__copy">
+            <div class="case-tabs" role="tablist" aria-label="WMS checker case details">
+              <button class="case-tab is-active" type="button" data-target="audit">Problem</button>
+              <button class="case-tab" type="button" data-target="logic">Checker</button>
+              <button class="case-tab" type="button" data-target="recovery">Value</button>
+            </div>
+
+            <article class="case-panel is-active" data-panel="audit">
+              <h4>The problem</h4>
+              <p>
+                The warehouse system was showing errors that were not clearly reflected in the ERP output.
+                That made it difficult to see where data mismatches were happening and where leakage could hide
+                inside routine transactions.
+              </p>
+              <ul>
+                <li>WMS and ERP were not aligned</li>
+                <li>Manual checking took too much time</li>
+                <li>Needed a faster way to isolate mismatches</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="logic">
+              <h4>The checker</h4>
+              <p>
+                I built a small web scraper that pulled structured tables from the WMS, lined them up against
+                an Excel export, and flagged the records that did not match cleanly across both views.
+              </p>
+              <ul>
+                <li>Scraped WMS tables into a repeatable checking flow</li>
+                <li>Compared live warehouse records against export data</li>
+                <li>Turned hidden mismatches into a clear exception list</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="recovery">
+              <h4>Why it mattered</h4>
+              <p>
+                The tool made it easier to spot leakage between systems, reduce manual hunting, and give both
+                operations and finance a clearer basis for follow-up.
+              </p>
+              <ul>
+                <li>Made mismatches visible faster</li>
+                <li>Reduced manual comparison work</li>
+                <li>Linked operational errors to data integrity checks</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="case-study__visual">
+            <div class="visual-panel is-active" data-panel="audit">
+              <div class="document-stack">
+                <div class="document-stack__file">WMS error table</div>
+                <div class="document-stack__file">transaction rows</div>
+                <div class="document-stack__file">ERP export</div>
+                <div class="document-stack__file">exception list</div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="logic">
+              <div class="audit-flow audit-flow--panel">
+                <div class="audit-flow__node">WMS tables</div>
+                <div class="audit-flow__arrow">compare</div>
+                <div class="audit-flow__node">Excel export</div>
+                <div class="audit-flow__arrow">flag</div>
+                <div class="audit-flow__node">exception rows</div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="recovery">
+              <div class="value-board">
+                <article><span>Signal</span><strong>mismatches surfaced</strong></article>
+                <article><span>Process</span><strong>faster checking</strong></article>
+                <article><span>Use</span><strong>clearer follow-up</strong></article>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-canvas">
+          <div class="canvas-head">
+            <p class="case-study__meta">Visual support</p>
+            <h4>Simple flow of the checker</h4>
+          </div>
+          <div class="audit-flow">
+            <div class="audit-flow__node">
+              <span>Input A</span>
+              <strong>WMS tables</strong>
+            </div>
+            <div class="audit-flow__arrow">compare</div>
+            <div class="audit-flow__node">
+              <span>Input B</span>
+              <strong>Excel export</strong>
+            </div>
+            <div class="audit-flow__arrow">flag</div>
+            <div class="audit-flow__node">
+              <span>Output</span>
+              <strong>mismatch list</strong>
+            </div>
+          </div>
+          <div class="audit-flow__note">
+            Built as a compact checking tool for catching leakage between warehouse and ERP records.
+          </div>
+        </div>
+
+      </section>
+
+      <section class="case-study" data-case id="case-05">
+        <div class="case-study__heading">
+          <div>
+            <p class="case-study__meta">Case 05 / AI chat assistant</p>
+            <h3>AI Chat Assistant for Onboarding and Information Retrieval</h3>
+            <p class="case-study__detail"><strong>Period:</strong> 2025 prototype phase | <strong>My
+                contribution:</strong> Individual setup of the assistant workflow, interface concept, and usability
+              framing for onboarding support.</p>
+          </div>
+          <p class="case-study__summary">
+            A business-oriented prototype for helping teams find answers faster in large document environments.
+          </p>
+        </div>
+
+        <div class="case-study__layout">
+          <div class="case-study__copy">
+            <div class="case-tabs" role="tablist" aria-label="AI chat assistant case details">
+              <button class="case-tab is-active" type="button" data-target="problem">Problem</button>
+              <button class="case-tab" type="button" data-target="solution">Solution</button>
+              <button class="case-tab" type="button" data-target="value">Value</button>
+            </div>
+
+            <article class="case-panel is-active" data-panel="problem">
+              <h4>The problem</h4>
+              <p>
+                In onboarding and internal support contexts, important knowledge is often spread across
+                documents, making it slow for people to find reliable answers when they need them.
+              </p>
+              <ul>
+                <li>Information scattered across internal material</li>
+                <li>Slow onboarding due to search friction</li>
+                <li>Need for faster access without losing source traceability</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="solution">
+              <h4>The operational prototype</h4>
+              <p>
+                I developed a prototype assistant interface that retrieves relevant internal information,
+                summarises it clearly, and keeps the answer connected to source material so users can trust and
+                verify what they read.
+              </p>
+              <ul>
+                <li>Search plus answer support in one workflow</li>
+                <li>Built to reduce time-to-information</li>
+                <li>Designed for usability, not just technical novelty</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="value">
+              <h4>Why it matters</h4>
+              <p>
+                The value is not only automation. It is about reducing frustration, making knowledge more
+                accessible, and helping teams become productive faster through clearer information flow.
+              </p>
+              <ul>
+                <li>Useful for onboarding and internal support</li>
+                <li>Strengthens consistency in information access</li>
+                <li>Shows how digital tools can support business processes directly</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="case-study__visual">
+            <div class="visual-panel is-active" data-panel="problem">
+              <div class="document-stack">
+                <div class="document-stack__file">process guide</div>
+                <div class="document-stack__file">policy manual</div>
+                <div class="document-stack__file">system notes</div>
+                <div class="document-stack__file">training deck</div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="solution">
+              <div class="chatbot-embed chatbot-embed--compact">
+                <div class="chatbot-inline chatbot-inline--compact" role="img"
+                  aria-label="Anonymised AI chat assistant interface">
+                  <div class="chatbot-inline__top">
+                    <div class="chatbot-inline__logo"></div>
+                    <strong>AI Chat Assistant</strong>
+                    <span>knowledge retrieval</span>
+                  </div>
+                  <div class="chatbot-inline__body">
+                    <div class="chatbot-inline__user">How does the reverse flow decision work?</div>
+                    <div class="chatbot-inline__bot">
+                      It compares condition, urgency, and handling class, then proposes route options with source
+                      traceability.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="value">
+              <div class="value-board">
+                <article><span>Onboarding speed</span><strong>improved</strong></article>
+                <article><span>Knowledge access</span><strong>clearer</strong></article>
+                <article><span>User confidence</span><strong>higher</strong></article>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-canvas">
+          <div class="canvas-head">
+            <p class="case-study__meta">Visual support</p>
+            <h4>Anonymised client interface based on the live assistant layout</h4>
+          </div>
+          <div class="chatbot-embed">
+            <div class="chatbot-inline" role="img" aria-label="Anonymised AI chat assistant interface">
+              <div class="chatbot-inline__top">
+                <div class="chatbot-inline__logo"></div>
+                <strong>AI Chat Assistant</strong>
+                <span>source-grounded support</span>
+              </div>
+              <div class="chatbot-inline__cols">
+                <div class="chatbot-inline__docs">
+                  <div>Policy extract</div>
+                  <div>Process SOP</div>
+                  <div>Operations manual</div>
+                  <div>Training FAQ</div>
+                </div>
+                <div class="chatbot-inline__chat">
+                  <div class="chatbot-inline__user">Show me onboarding steps for inbound exceptions.</div>
+                  <div class="chatbot-inline__bot">
+                    Step 1: classify the exception and attach source photo. Step 2: validate against SOP section 3.2.
+                    Step 3: route the ticket to planning if lead-time impact is expected.
+                  </div>
+                  <div class="chatbot-inline__sources">
+                    <span>SOP 3.2</span>
+                    <span>Inbound FAQ</span>
+                    <span>Exception matrix</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-study" data-case id="case-06">
+        <div class="case-study__heading">
+          <div>
+            <p class="case-study__meta">Case 06 / Inventory control dashboard</p>
+            <h3>Cycle Counting and Inventory Accuracy Monitoring</h3>
+            <p class="case-study__detail"><strong>Period:</strong> 2024-2025 internship phase | <strong>My
+                contribution:</strong> Individual cycle-count optimization and Power BI dashboard development for staff
+              performance and inventory control.</p>
+          </div>
+          <p class="case-study__summary">
+            Power BI-based cycle counting dashboard built to improve inventory accuracy, show staff performance,
+            and encourage more proactive counting on the warehouse floor.
+          </p>
+        </div>
+
+        <div class="case-study__layout">
+          <div class="case-study__copy">
+            <div class="case-tabs" role="tablist" aria-label="Cycle counting case details">
+              <button class="case-tab is-active" type="button" data-target="count-problem">Problem</button>
+              <button class="case-tab" type="button" data-target="count-dashboard">Dashboard</button>
+              <button class="case-tab" type="button" data-target="count-value">Value</button>
+            </div>
+
+            <article class="case-panel is-active" data-panel="count-problem">
+              <h4>The problem</h4>
+              <p>
+                The cycle counting process needed more structure and visibility. Counting had to fit around daily
+                operations, discrepancies needed faster follow-up, and staff needed a clearer view of progress and
+                performance to keep counting proactive instead of reactive.
+              </p>
+              <ul>
+                <li>Inventory differences were hard to track consistently</li>
+                <li>Counting activity needed to happen more often without disruption</li>
+                <li>Recently mutated articles should be excluded for a set window to avoid operational disturbance</li>
+                <li>Supervisors and staff needed visibility on count performance</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="count-dashboard">
+              <h4>The dashboard</h4>
+              <p>
+                I built a Power BI dashboard around the new cycle counting setup so count completion, discrepancy
+                trends, and staff performance could be reviewed in one place. A key design decision was to avoid
+                counting any article within a defined time window after a mutation, so cycle counts would not clash
+                with active warehouse movements or create avoidable disruption.
+              </p>
+              <ul>
+                <li>Count progress and discrepancy patterns brought into one view</li>
+                <li>Mutation-based exclusion window protected the operation during active stock changes</li>
+                <li>Staff could see their own performance and counting contribution</li>
+                <li>Useful for daily control, meetings, and prioritising follow-up</li>
+              </ul>
+            </article>
+
+            <article class="case-panel" data-panel="count-value">
+              <h4>Why it mattered</h4>
+              <p>
+                The project helped turn cycle counting into an active management tool. It supported more frequent
+                counts, reduced discrepancies in testing, and gave warehouse staff an incentive to count
+                proactively because performance became visible.
+              </p>
+              <ul>
+                <li>More counts per day without disrupting operations</li>
+                <li>Count timing was aligned with warehouse flow instead of interrupting live mutations</li>
+                <li>Better visibility on inventory accuracy and count discipline</li>
+                <li>Clearer steering for both supervisors and warehouse staff</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="case-study__visual">
+            <div class="visual-panel is-active" data-panel="count-problem">
+              <div class="document-stack">
+                <div class="document-stack__file">count plan</div>
+                <div class="document-stack__file">location list</div>
+                <div class="document-stack__file">mutation freeze rule</div>
+                <div class="document-stack__file">variance report</div>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="count-dashboard">
+              <div class="cycle-bi-mini">
+                <section class="cycle-bi-mini__panel">
+                  <p>Reliability by Month</p>
+                  <svg viewBox="0 0 220 120" aria-hidden="true">
+                    <polyline points="12,92 40,84 68,52 96,40 124,56 152,24 180,48 208,104"></polyline>
+                    <text x="10" y="100">69.8%</text>
+                    <text x="92" y="34">86.7%</text>
+                    <text x="146" y="18">91.9%</text>
+                    <text x="182" y="112">62.1%</text>
+                  </svg>
+                </section>
+                <section class="cycle-bi-mini__panel">
+                  <p>Reliability by Team</p>
+                  <div class="cycle-bi-mini__bars">
+                    <div><span>M</span><strong style="width:88%"></strong><em>88.4%</em></div>
+                    <div><span>K</span><strong style="width:86%"></strong><em>86.3%</em></div>
+                    <div><span>I</span><strong style="width:85%"></strong><em>85.3%</em></div>
+                    <div><span>L</span><strong style="width:84%"></strong><em>85.1%</em></div>
+                  </div>
+                </section>
+                <section class="cycle-bi-mini__panel">
+                  <p>Dashboard Filters</p>
+                  <div class="cycle-bi-mini__filters">
+                    <div><span>Team filter</span><strong>All</strong></div>
+                    <div><span>Month number</span><strong>All</strong></div>
+                    <div><span>ABC filter</span><strong>A / B / C</strong></div>
+                  </div>
+                </section>
+                <section class="cycle-bi-mini__panel">
+                  <p>ABC Mix by Month</p>
+                  <div class="cycle-bi-mini__stacked">
+                    <span><i class="cycle-bi-mini__seg cycle-bi-mini__seg--a"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--b"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--c"></i></span>
+                    <span><i class="cycle-bi-mini__seg cycle-bi-mini__seg--a"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--b"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--c"></i></span>
+                    <span><i class="cycle-bi-mini__seg cycle-bi-mini__seg--a"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--b"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--c"></i></span>
+                    <span><i class="cycle-bi-mini__seg cycle-bi-mini__seg--a"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--b"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--c"></i></span>
+                    <span><i class="cycle-bi-mini__seg cycle-bi-mini__seg--a"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--b"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--c"></i></span>
+                    <span><i class="cycle-bi-mini__seg cycle-bi-mini__seg--a"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--b"></i><i
+                        class="cycle-bi-mini__seg cycle-bi-mini__seg--c"></i></span>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            <div class="visual-panel" data-panel="count-value">
+              <div class="value-board">
+                <article><span>Behaviour</span><strong>more proactive counting</strong></article>
+                <article><span>Accuracy</span><strong>better monitored</strong></article>
+                <article><span>Follow-up</span><strong>faster intervention</strong></article>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-canvas">
+          <div class="canvas-head">
+            <p class="case-study__meta">Visual support</p>
+            <h4>Power BI-inspired cycle count dashboard anonymised for portfolio use</h4>
+          </div>
+          <div class="cycle-bi-board">
+            <section class="cycle-bi-board__panel">
+              <h5>Reliability by Month</h5>
+              <svg viewBox="0 0 250 150" aria-hidden="true">
+                <polyline points="16,112 42,104 68,72 94,58 120,70 146,34 172,64 198,72 224,124"></polyline>
+                <text x="14" y="118">69.8%</text>
+                <text x="66" y="64">86.7%</text>
+                <text x="142" y="28">91.9%</text>
+                <text x="190" y="68">81.6%</text>
+                <text x="218" y="132">62.1%</text>
+              </svg>
+            </section>
+
+            <section class="cycle-bi-board__panel">
+              <h5>Reliability by Team</h5>
+              <div class="cycle-bi-board__bars">
+                <div><span>M</span><strong style="width:88%"></strong><em>88.37%</em></div>
+                <div><span>K</span><strong style="width:86%"></strong><em>86.29%</em></div>
+                <div><span>I</span><strong style="width:85%"></strong><em>85.33%</em></div>
+                <div><span>L</span><strong style="width:84%"></strong><em>85.06%</em></div>
+                <div><span>AA</span><strong style="width:83%"></strong><em>83.13%</em></div>
+                <div><span>E</span><strong style="width:82%"></strong><em>82.63%</em></div>
+              </div>
+            </section>
+
+            <section class="cycle-bi-board__panel">
+              <h5>Dashboard Filters</h5>
+              <div class="cycle-bi-board__filters">
+                <div><span>Team filter</span><strong>All</strong></div>
+                <div><span>Month number</span><strong>All</strong></div>
+                <div><span>ABC analysis</span><strong>A / B / C</strong></div>
+              </div>
+            </section>
+
+            <section class="cycle-bi-board__panel">
+              <h5>ABC Mix by Month</h5>
+              <div class="cycle-bi-board__stacked">
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+              </div>
+            </section>
+
+            <section class="cycle-bi-board__panel">
+              <h5>Reliability Trend (Log)</h5>
+              <svg viewBox="0 0 250 150" aria-hidden="true">
+                <polyline points="16,90 42,108 68,72 94,76 120,58 146,96 172,68 198,102 224,114"></polyline>
+                <text x="18" y="84">4.8%</text>
+                <text x="44" y="114">4.2%</text>
+                <text x="118" y="54">6.4%</text>
+                <text x="168" y="64">5.7%</text>
+              </svg>
+            </section>
+
+            <section class="cycle-bi-board__panel">
+              <h5>Reliability by Team (Log)</h5>
+              <div class="cycle-bi-board__bars cycle-bi-board__bars--small">
+                <div><span>M</span><strong style="width:67%"></strong><em>6.69%</em></div>
+                <div><span>K</span><strong style="width:61%"></strong><em>6.11%</em></div>
+                <div><span>L</span><strong style="width:60%"></strong><em>6.09%</em></div>
+                <div><span>N</span><strong style="width:56%"></strong><em>5.66%</em></div>
+                <div><span>AA</span><strong style="width:53%"></strong><em>5.27%</em></div>
+                <div><span>A</span><strong style="width:49%"></strong><em>4.95%</em></div>
+              </div>
+            </section>
+
+            <section class="cycle-bi-board__panel">
+              <h5>ABC Inventory Counts</h5>
+              <div class="cycle-bi-board__donut-wrap">
+                <svg class="cycle-bi-board__donut" viewBox="0 0 120 120" aria-hidden="true">
+                  <circle class="cycle-bi-board__ring cycle-bi-board__ring--base" cx="60" cy="60" r="34"></circle>
+                  <circle class="cycle-bi-board__ring cycle-bi-board__ring--c" cx="60" cy="60" r="34"></circle>
+                  <circle class="cycle-bi-board__ring cycle-bi-board__ring--b" cx="60" cy="60" r="34"></circle>
+                  <circle class="cycle-bi-board__ring cycle-bi-board__ring--a" cx="60" cy="60" r="34"></circle>
+                </svg>
+                <div class="cycle-bi-board__legend">
+                  <div><i class="cycle-bi-board__dot cycle-bi-board__dot--c"></i><span>C 61.8%</span></div>
+                  <div><i class="cycle-bi-board__dot cycle-bi-board__dot--b"></i><span>B 21.9%</span></div>
+                  <div><i class="cycle-bi-board__dot cycle-bi-board__dot--a"></i><span>A 16.3%</span></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="cycle-bi-board__panel">
+              <h5>ABC Mix by Team</h5>
+              <div class="cycle-bi-board__stacked cycle-bi-board__stacked--teams">
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+                <span><i class="cycle-bi-board__seg cycle-bi-board__seg--a"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--b"></i><i
+                    class="cycle-bi-board__seg cycle-bi-board__seg--c"></i></span>
+              </div>
+            </section>
+
+            <section class="cycle-bi-board__panel cycle-bi-board__panel--wide">
+              <h5>Absolute Count Trend</h5>
+              <svg viewBox="0 0 1050 150" aria-hidden="true">
+                <polyline class="cycle-bi-board__line cycle-bi-board__line--orange"
+                  points="20,58 136,64 252,70 368,62 484,68 600,66 716,60 832,64 948,70 1030,66"></polyline>
+                <polyline class="cycle-bi-board__line cycle-bi-board__line--blue"
+                  points="20,84 136,108 252,80 368,94 484,76 600,52 716,110 832,80 948,92 1030,104"></polyline>
+                <text x="26" y="52">0.8K</text>
+                <text x="248" y="74">1.4K</text>
+                <text x="592" y="46">1.4K</text>
+                <text x="828" y="74">0.8K</text>
+              </svg>
+            </section>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="section-heading">
+        <p class="eyebrow">Contact</p>
+        <h2>Interested in an internship in data-driven supply chain analysis? Let us connect.</h2>
+        <p class="contact-lead">
+          I am actively looking for an internship where I can combine supply chain analysis, process mining, and
+          operational improvement across planning, inventory, logistics, procurement, or operations control.
+        </p>
+        <div class="contact-cta">
+          <a class="contact-cta__button" href="mailto:Jornvschagen@gmail.com?subject=Internship%20Opportunity">
+            Email me about internship opportunities
+          </a>
+          <a class="contact-cta__button contact-cta__button--ghost" href="tel:+31649528614">
+            Call me directly
+          </a>
+        </div>
+      </div>
+
+      <div class="contact-panel">
+        <div class="contact-panel__item">
+          <span>Email</span>
+          <strong>Jornvschagen@gmail.com</strong>
+        </div>
+        <div class="contact-panel__item">
+          <span>Phone</span>
+          <strong>0649528614</strong>
+        </div>
+        <div class="contact-panel__item">
+          <span>Internship focus</span>
+          <strong>Supply chain analytics, process mining, dashboarding, and performance improvement across planning,
+            inventory, transport, and network operations</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Forklift scroll indicator -->
+  <div class="forklift-track" id="forkliftTrack" aria-hidden="true">
+    <div class="forklift-track__rail"></div>
+    <div class="forklift-track__marks" id="forkliftMarks"></div>
+    <div class="forklift-track__progress" id="forkliftProgress"></div>
+    <div class="forklift-track__vehicle" id="forkliftVehicle">
+      <svg viewBox="0 0 94 48" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <!-- === Side-view forklift facing RIGHT === -->
+
+        <!-- Mast (vertical beam behind forks) -->
+        <rect x="52" y="4" width="4" height="30" rx="1.5" fill="#b0b0b0" />
+        <rect x="53" y="4" width="2" height="30" rx="1" fill="#c8c8c8" opacity="0.5" />
+        <!-- Mast crossbars -->
+        <rect x="50" y="9" width="8" height="2" rx="1" fill="#a0a0a0" />
+        <rect x="50" y="16" width="8" height="2" rx="1" fill="#a0a0a0" />
+        <rect x="50" y="23" width="8" height="2" rx="1" fill="#a0a0a0" />
+
+        <!-- Overhead guard / roof -->
+        <rect x="49" y="2" width="10" height="3" rx="1.5" fill="#e8a030" />
+        <rect x="48" y="0" width="12" height="3" rx="1.5" fill="#d4882a" />
+
+        <!-- Forks (extending right from mast) â€” bold & visible -->
+        <g class="forklift-forks">
+          <!-- Fork tines (extra long for visibility) -->
+          <rect x="54" y="27" width="36" height="4" rx="1" fill="#707070" stroke="#555" stroke-width="0.5" />
+          <rect x="54" y="20" width="36" height="4" rx="1" fill="#707070" stroke="#555" stroke-width="0.5" />
+          <!-- Fork tips (squared-off L-shape) -->
+          <rect x="88" y="19" width="3" height="6" rx="0.8" fill="#707070" stroke="#555" stroke-width="0.5" />
+          <rect x="88" y="26" width="3" height="6" rx="0.8" fill="#707070" stroke="#555" stroke-width="0.5" />
+          <!-- Fork backplate connecting to mast -->
+          <rect x="52" y="18" width="3" height="15" rx="1" fill="#606060" />
+        </g>
+
+        <!-- Body / chassis -->
+        <path d="M8,18 L44,14 Q48,14 48,18 L48,34 Q48,38 44,38 L12,38 Q8,38 8,34 Z" fill="#f0b030" />
+        <!-- Body darker bottom strip -->
+        <rect x="8" y="32" width="40" height="6" rx="2" fill="#e8a020" />
+        <!-- Body highlight -->
+        <rect x="12" y="16" width="30" height="3" rx="1.5" fill="#f8c848" opacity="0.6" />
+
+        <!-- Cab / operator area -->
+        <path d="M14,10 L38,8 Q42,8 42,12 L42,28 Q42,30 40,30 L14,30 Q12,30 12,28 L12,12 Q12,10 14,10 Z"
+          fill="#d0d0d0" />
+        <!-- Cab window -->
+        <rect x="16" y="11" width="22" height="14" rx="3" fill="#e8e4dc" opacity="0.9" />
+        <!-- Window glare -->
+        <rect x="17" y="12" width="6" height="12" rx="2" fill="#fff" opacity="0.35" />
+        <!-- Window frame -->
+        <rect x="16" y="11" width="22" height="1.5" rx="0.75" fill="#b0b0b0" />
+        <rect x="16" y="24" width="22" height="1.5" rx="0.75" fill="#b0b0b0" />
+
+        <!-- Steering wheel hint -->
+        <circle cx="34" cy="22" r="2.5" fill="none" stroke="#555" stroke-width="1.2" />
+        <line x1="34" y1="22" x2="34" y2="25" stroke="#555" stroke-width="1" />
+
+        <!-- Engine hood area -->
+        <rect x="2" y="18" width="12" height="16" rx="3" fill="#e8a020" />
+        <rect x="3" y="20" width="4" height="8" rx="1.5" fill="#d08818" opacity="0.5" />
+
+        <!-- Exhaust pipe -->
+        <rect x="4" y="12" width="2.5" height="8" rx="1.25" fill="#666" />
+        <!-- Smoke puffs -->
+        <circle class="forklift-smoke" cx="5" cy="10" r="2" fill="#bbb" />
+        <circle class="forklift-smoke" cx="3" cy="7" r="2.5" fill="#ccc" />
+        <circle class="forklift-smoke" cx="6" cy="5" r="2" fill="#ddd" />
+
+        <!-- Counterweight (rear) -->
+        <rect x="1" y="22" width="5" height="14" rx="2" fill="#444" />
+
+        <!-- Rear wheel (big) -->
+        <g class="forklift-wheel">
+          <circle cx="16" cy="40" r="7" fill="#555" />
+          <circle cx="16" cy="40" r="5" fill="#666" />
+          <circle cx="16" cy="40" r="2" fill="#888" />
+          <line x1="16" y1="33" x2="16" y2="35.5" stroke="#777" stroke-width="0.8" />
+          <line x1="16" y1="44.5" x2="16" y2="47" stroke="#777" stroke-width="0.8" />
+          <line x1="9" y1="40" x2="11.5" y2="40" stroke="#777" stroke-width="0.8" />
+          <line x1="20.5" y1="40" x2="23" y2="40" stroke="#777" stroke-width="0.8" />
+        </g>
+
+        <!-- Front wheel (smaller, near forks) -->
+        <g class="forklift-wheel">
+          <circle cx="44" cy="42" r="5" fill="#555" />
+          <circle cx="44" cy="42" r="3.5" fill="#666" />
+          <circle cx="44" cy="42" r="1.5" fill="#888" />
+        </g>
+
+        <!-- Seat -->
+        <rect x="28" y="26" width="8" height="3" rx="1.5" fill="#444" />
+        <rect x="35" y="22" width="3" height="7" rx="1.5" fill="#444" />
+
+        <!-- Headlight -->
+        <circle cx="3" cy="26" r="1.5" fill="#ffe066" />
+        <circle cx="3" cy="26" r="2.5" fill="#ffe066" opacity="0.3" />
+      </svg>
+      <div class="forklift-track__tooltip" id="forkliftTooltip">0%</div>
+    </div>
+    <div class="forklift-track__clickzone" id="forkliftClickzone"></div>
+  </div>
+
+  <script>
+const caseStudies = document.querySelectorAll("[data-case]");
+const navLinks = document.querySelectorAll(".site-nav a");
+const caseJumpLinks = document.querySelectorAll(".case-jump__link");
+const warehouseToggle = document.querySelector("[data-warehouse-toggle]");
+const warehouseFrame = document.querySelector("[data-warehouse-frame]");
+
+caseStudies.forEach((caseStudy) => {
+  const tabs = caseStudy.querySelectorAll(".case-tab");
+  const panels = caseStudy.querySelectorAll(".case-panel");
+  const visuals = caseStudy.querySelectorAll(".visual-panel");
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const target = tab.dataset.target;
+
+      tabs.forEach((item) => item.classList.toggle("is-active", item === tab));
+      panels.forEach((panel) => {
+        panel.classList.toggle("is-active", panel.dataset.panel === target);
+      });
+      visuals.forEach((visual) => {
+        visual.classList.toggle("is-active", visual.dataset.panel === target);
+      });
+    });
+  });
+});
+
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      navLinks.forEach((link) => {
+        const isCurrent = link.getAttribute("href") === `#${entry.target.id}`;
+        link.classList.toggle("is-current", isCurrent);
+      });
+    });
+  },
+  {
+    rootMargin: "-35% 0px -50% 0px",
+    threshold: 0
+  }
+);
+
+["cases", "strengths", "contact"].forEach((id) => {
+  const section = document.getElementById(id);
+  if (section) observer.observe(section);
+});
+
+const caseObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      caseJumpLinks.forEach((link) => {
+        const isCurrent = link.getAttribute("href") === `#${entry.target.id}`;
+        link.classList.toggle("is-current", isCurrent);
+      });
+    });
+  },
+  {
+    rootMargin: "-25% 0px -60% 0px",
+    threshold: 0
+  }
+);
+
+caseStudies.forEach((caseStudy) => {
+  if (caseStudy.id) caseObserver.observe(caseStudy);
+});
+
+if (warehouseToggle && warehouseFrame) {
+  const setWarehouseMode = (interactive) => {
+    warehouseFrame.classList.toggle("is-interactive", interactive);
+    warehouseToggle.classList.toggle("is-active", interactive);
+    warehouseToggle.setAttribute("aria-pressed", String(interactive));
+    warehouseToggle.textContent = interactive ? "Return to page scroll" : "Activate live warehouse";
+  };
+
+  setWarehouseMode(false);
+
+  warehouseToggle.addEventListener("click", () => {
+    const nextState = warehouseToggle.getAttribute("aria-pressed") !== "true";
+    setWarehouseMode(nextState);
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      setWarehouseMode(false);
+    }
+  });
+}
+
+</script>
+  <script>
+    (() => {
+      const track = document.getElementById('forkliftTrack');
+      const vehicle = document.getElementById('forkliftVehicle');
+      const progress = document.getElementById('forkliftProgress');
+      const tooltip = document.getElementById('forkliftTooltip');
+      const marks = document.getElementById('forkliftMarks');
+      const clickzone = document.getElementById('forkliftClickzone');
+
+      const TRACK_PAD = 24;
+      const VEHICLE_H = 50;
+      let scrollTimeout;
+      let lastScrollY = window.scrollY;
+      let scrollDirection = 'down';
+
+      // Generate hash marks
+      const markCount = 20;
+      for (let i = 0; i <= markCount; i++) {
+        const mark = document.createElement('div');
+        mark.className = 'forklift-track__mark';
+        mark.style.top = (i / markCount * 100) + '%';
+        marks.appendChild(mark);
+      }
+
+      function updateForklift() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+
+        // Detect scroll direction
+        if (scrollTop > lastScrollY + 2) {
+          scrollDirection = 'down';
+          track.classList.remove('is-going-up');
+        } else if (scrollTop < lastScrollY - 2) {
+          scrollDirection = 'up';
+          track.classList.add('is-going-up');
+        }
+        lastScrollY = scrollTop;
+
+        const trackHeight = window.innerHeight - TRACK_PAD * 2 - VEHICLE_H;
+        const vehicleTop = TRACK_PAD + pct * trackHeight;
+
+        vehicle.style.top = vehicleTop + 'px';
+        progress.style.height = (pct * (window.innerHeight - TRACK_PAD * 2)) + 'px';
+        tooltip.textContent = Math.round(pct * 100) + '%';
+
+        // Flash scrolling state
+        track.classList.add('is-scrolling');
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          track.classList.remove('is-scrolling');
+        }, 300);
+      }
+
+      // Click to scroll
+      clickzone.addEventListener('click', (e) => {
+        const rect = clickzone.getBoundingClientRect();
+        const clickY = e.clientY - rect.top;
+        const pct = Math.max(0, Math.min((clickY - TRACK_PAD) / (rect.height - TRACK_PAD * 2), 1));
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        window.scrollTo({ top: pct * docHeight, behavior: 'smooth' });
+      });
+
+      window.addEventListener('scroll', updateForklift, { passive: true });
+      window.addEventListener('resize', updateForklift, { passive: true });
+      updateForklift();
+    })();
+  </script>
+</body>
+
+</html>
+
+
